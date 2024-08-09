@@ -8,7 +8,7 @@ const App = lazy(() => import('./App'))
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense>
       <App />
     </Suspense>
   </BrowserRouter>,
