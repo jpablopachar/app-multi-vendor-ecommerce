@@ -5,6 +5,11 @@ export default [
   {
     files: ['**/*.{js}'],
     ignores: ['dist'],
+    env: {
+      browser: true,
+      node: true,
+      es2020: true
+    },
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
@@ -13,6 +18,10 @@ export default [
         sourceType: 'module',
       },
     },
+    rules: {
+      // ...pluginJs.configs.recommended.rules,
+      "no-undef": "error"
+    }
   },
   pluginJs.configs.recommended,
 ]
