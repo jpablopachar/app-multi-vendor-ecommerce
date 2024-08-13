@@ -5,7 +5,7 @@ import express from 'express'
 import morgan from 'morgan'
 import { PORT } from './config.js'
 import { authRouter } from './routes/auth/authRoutes.js'
-import { swaggerDocs } from './routes/swagger.js'
+// import { swaggerDocs } from './routes/swagger.js'
 import { dbConnect } from './utils/db.js'
 
 const corsOptions = {
@@ -30,6 +30,6 @@ dbConnect().then(() => {
     // eslint-disable-next-line no-undef
     console.log(`Server is running on http://localhost:${PORT}`)
 
-    swaggerDocs(app, PORT)
+    // swaggerDocs(app, PORT)
   })
 })
