@@ -1,8 +1,10 @@
+import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import express from 'express'
 import morgan from 'morgan'
 import { PORT } from './config.js'
+import { authRouter } from './routes/auth/authRoutes.js'
 import { dbConnect } from './utils/db.js'
 
 const corsOptions = {
@@ -16,8 +18,11 @@ const app = express()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+app.use(cookieParser())
 app.use(morgan('dev'))
 app.use(cors(corsOptions))
+
+app.use('/api', authRouter)
 
 dbConnect().then(() => {
   app.listen(PORT, () => {
