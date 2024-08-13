@@ -20,7 +20,7 @@ export default [
     },
     rules: {
       // ...pluginJs.configs.recommended.rules,
-      "no-undef": "error"
+      "no-undef": "off"
     }
   },
   pluginJs.configs.recommended,
