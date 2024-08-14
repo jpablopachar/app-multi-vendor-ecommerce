@@ -9,7 +9,7 @@ import { authRouter } from './routes/auth/authRoutes.js'
 import { dbConnect } from './utils/db.js'
 
 const corsOptions = {
-  origin : ['http://localhost:3000','http://localhost:4200'],
+  origin : ['http://localhost:5173','http://localhost:4200'],
   credentials: true
 }
 
