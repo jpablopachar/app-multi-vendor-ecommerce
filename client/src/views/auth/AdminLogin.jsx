@@ -3,6 +3,7 @@ import toast from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { PropagateLoader } from 'react-spinners'
+import Logo from '../../assets/images/logo.png'
 import { adminLogin, messageClear } from '../../store/reducers/authReducer'
 
 const AdminLogin = () => {
@@ -43,11 +44,14 @@ const AdminLogin = () => {
   useEffect(() => {
     if (errorMessage) {
       toast.error(errorMessage)
+
       dispatch(messageClear())
     }
     if (successMessage) {
       toast.success(successMessage)
+
       dispatch(messageClear())
+
       navigate('/')
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,11 +63,11 @@ const AdminLogin = () => {
         <div className="bg-[#6f68d1] p-4 rounded-md">
           <div className="h-[70px] flex justify-center items-center">
             <div className="w-[180px] h-[50px]">
-              {/* <img
+              {<img
                 className="w-full h-full"
-                src="http://localhost:3000/images/logo.png"
+                src={Logo}
                 alt="image"
-              /> */}
+              />}
             </div>
           </div>
           <form onSubmit={submit}>
