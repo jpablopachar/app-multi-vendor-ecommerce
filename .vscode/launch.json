@@ -7,7 +7,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
+      "name": "Launch Node",
       "skipFiles": [
         "<node_internals>/**"
       ],
@@ -16,8 +16,15 @@
     {
       "type": "msedge",
       "request": "launch",
-      "name": "Launch Edge",
+      "name": "Launch React",
       "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "Launch Angular",
+      "type": "msedge",
+      "request": "launch",
+      "url": "http://localhost:4200/",
       "webRoot": "${workspaceFolder}"
     }
   ]
