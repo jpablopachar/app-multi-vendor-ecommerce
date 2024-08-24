@@ -1,8 +1,19 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import { FaFacebook, FaGoogle } from 'react-icons/fa'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { PropagateLoader } from 'react-spinners'
+import { messageClear } from '../../store/reducers/authReducer'
+import { overrideStyle } from '../../utils/utils'
 
 const Login = () => {
+  const dispatch = useDispatch()
+
+  const { loader, successMessage, errorMessage } = useSelector(
+    (state) => state.auth
+  )
+
   const [state, setState] = useState({ email: '', password: '' })
 
   const inputHandler = (event) => {
@@ -17,6 +28,21 @@ const Login = () => {
 
     console.log(state)
   }
+
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage)
+
+      dispatch(messageClear())
+    }
+
+    if (errorMessage) {
+      toast.error(errorMessage)
+
+      dispatch(messageClear())
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [errorMessage, successMessage])
 
   return (
     <div className="min-w-screen min-h-screen bg-[#cdcae9] flex justify-center items-center">
@@ -53,8 +79,15 @@ const Login = () => {
                 required
               />
             </div>
-            <button className="bg-slate-800 w-full hover:shadow-blue-300/ hover:shadow-lg text-white rounded-md px-7 py-2 mb-3">
-              Sing In
+            <button
+              disabled={loader ? true : false}
+              className="bg-slate-800 w-full hover:shadow-blue-300/ hover:shadow-lg text-white rounded-md px-7 py-2 mb-3"
+            >
+              {loader ? (
+                <PropagateLoader color="#fff" cssOverride={overrideStyle} />
+              ) : (
+                'Sing In'
+              )}
             </button>
             <div className="flex items-center mb-3 gap-3 justify-center">
               <p>

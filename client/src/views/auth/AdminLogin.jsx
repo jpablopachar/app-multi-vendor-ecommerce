@@ -9,6 +9,7 @@ import { adminLogin, messageClear } from '../../store/reducers/authReducer'
 const AdminLogin = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+
   const { loader, errorMessage, successMessage } = useSelector(
     (state) => state.auth
   )
@@ -38,7 +39,7 @@ const AdminLogin = () => {
     margin: '0 auto',
     height: '24px',
     justifyContent: 'center',
-    alignItem: 'center',
+    alignItems: 'center',
   }
 
   useEffect(() => {
