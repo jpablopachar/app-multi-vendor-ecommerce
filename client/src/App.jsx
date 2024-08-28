@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Router from './router/Router'
@@ -22,7 +24,7 @@ function App() {
 
   useEffect(() => {
     if (token) dispatch(getUserInfo())
-  })
+  }, [token])
 
   return (
     <>
