@@ -28,8 +28,6 @@ const Login = () => {
   const submit = (event) => {
     event.preventDefault()
 
-    console.log(state)
-
     dispatch(sellerLogin(state))
   }
 

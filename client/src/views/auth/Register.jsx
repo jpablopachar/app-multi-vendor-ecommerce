@@ -32,8 +32,6 @@ const Register = () => {
   const submit = (event) => {
     event.preventDefault()
 
-    console.log(state)
-
     dispatch(sellerRegister(state))
   }
 

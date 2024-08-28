@@ -14,8 +14,6 @@ function App() {
 
   const [allRoutes, setAllRoutes] = useState([...publicRoutes])
 
-  console.log(allRoutes)
-
   useEffect(() => {
     const routes = getRoutes()
 

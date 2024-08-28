@@ -5,14 +5,10 @@ import api from '../../api/api'
 export const adminLogin = createAsyncThunk(
   'auth/adminLogin',
   async (info, { rejectWithValue, fulfillWithValue }) => {
-    console.log(info)
-
     try {
       const { data } = await api.post('/auth/admin-login', info, {
         withCredentials: true,
       })
-
-      console.log(data)
 
       localStorage.setItem('accessToken', data.token)
 
@@ -27,9 +23,9 @@ export const getUserInfo = createAsyncThunk(
   'auth/getUserInfo',
   async (_, { rejectWithValue, fulfillWithValue }) => {
     try {
-      const { data } = await api.get('/auth/get-user', { withCredentials: true })
-
-      console.log(data)
+      const { data } = await api.get('/auth/get-user', {
+        withCredentials: true,
+      })
 
       return fulfillWithValue(data)
     } catch (error) {
@@ -41,14 +37,10 @@ export const getUserInfo = createAsyncThunk(
 export const sellerLogin = createAsyncThunk(
   'auth/sellerLogin',
   async (info, { rejectWithValue, fulfillWithValue }) => {
-    console.log(info)
-
     try {
       const { data } = await api.post('/auth/seller-login', info, {
         withCredentials: true,
       })
-
-      console.log(data)
 
       localStorage.setItem('accessToken', data.token)
 
@@ -62,14 +54,10 @@ export const sellerLogin = createAsyncThunk(
 export const sellerRegister = createAsyncThunk(
   'auth/sellerRegister',
   async (info, { rejectWithValue, fulfillWithValue }) => {
-    console.log(info)
-
     try {
       const { data } = await api.post('/auth/seller-register', info, {
         withCredentials: true,
       })
-
-      console.log(data)
 
       localStorage.setItem('accessToken', data.token)
 
@@ -81,7 +69,7 @@ export const sellerRegister = createAsyncThunk(
 )
 
 const returnRole = (token) => {
-  if (!token) return
+  if (!token) return ''
 
   const decodeToken = jwtDecode(token)
   const expireTime = new Date(decodeToken.exp * 1000)
@@ -89,7 +77,7 @@ const returnRole = (token) => {
   if (new Date() > expireTime) {
     localStorage.removeItem('accessToken')
 
-    return
+    return ''
   } else {
     return decodeToken.role
   }
@@ -103,7 +91,7 @@ export const authReducer = createSlice({
     loader: false,
     userInfo: '',
     role: returnRole(localStorage.getItem('accessToken')),
-    token: localStorage.getItem('accessToken')
+    token: localStorage.getItem('accessToken'),
   },
   reducers: {
     messageClear: (state) => {
@@ -130,7 +118,7 @@ export const authReducer = createSlice({
       })
       .addCase(sellerLogin.rejected, (state, { payload }) => {
         state.loader = false
-        state.errorMessage = payload.message
+        state.errorMessage = payload.error
       })
       .addCase(sellerLogin.fulfilled, (state, { payload }) => {
         state.loader = false
@@ -143,13 +131,17 @@ export const authReducer = createSlice({
       })
       .addCase(sellerRegister.rejected, (state, { payload }) => {
         state.loader = false
-        state.errorMessage = payload.message
-        state.token = payload.token
-        state.role = returnRole(payload.token)
+        state.errorMessage = payload.error
       })
       .addCase(sellerRegister.fulfilled, (state, { payload }) => {
         state.loader = false
         state.successMessage = payload.message
+        state.token = payload.token
+        state.role = returnRole(payload.token)
+      })
+      .addCase(getUserInfo.fulfilled, (state, { payload }) => {
+        state.loader = false
+        state.userInfo = payload.userInfo
       })
   },
 })

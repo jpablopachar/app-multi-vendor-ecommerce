@@ -29,8 +29,6 @@ const AdminLogin = () => {
   const submit = (event) => {
     event.preventDefault()
 
-    console.log(state)
-
     dispatch(adminLogin(state))
   }
 
