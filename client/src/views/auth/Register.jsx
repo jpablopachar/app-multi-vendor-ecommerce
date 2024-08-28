@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { FaFacebook, FaGoogle } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { PropagateLoader } from 'react-spinners'
 import { messageClear, sellerRegister } from '../../store/reducers/authReducer'
 import { overrideStyle } from '../../utils/utils'
 
 const Register = () => {
+  const navigate = useNavigate()
+
   const dispatch = useDispatch()
 
   const { loader, successMessage, errorMessage } = useSelector(
@@ -40,6 +42,8 @@ const Register = () => {
       toast.success(successMessage)
 
       dispatch(messageClear())
+
+      navigate('/')
     }
 
     if (errorMessage) {

@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { FaFacebook, FaGoogle } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { PropagateLoader } from 'react-spinners'
-import { messageClear } from '../../store/reducers/authReducer'
+import { messageClear, sellerLogin } from '../../store/reducers/authReducer'
 import { overrideStyle } from '../../utils/utils'
 
 const Login = () => {
+  const navigate = useNavigate()
+
   const dispatch = useDispatch()
 
   const { loader, successMessage, errorMessage } = useSelector(
@@ -27,6 +29,8 @@ const Login = () => {
     event.preventDefault()
 
     console.log(state)
+
+    dispatch(sellerLogin(state))
   }
 
   useEffect(() => {
@@ -34,6 +38,8 @@ const Login = () => {
       toast.success(successMessage)
 
       dispatch(messageClear())
+
+      navigate('/')
     }
 
     if (errorMessage) {

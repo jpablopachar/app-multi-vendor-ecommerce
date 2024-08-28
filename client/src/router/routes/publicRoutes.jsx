@@ -1,22 +1,33 @@
-import { lazy } from "react"
+/* eslint-disable react-refresh/only-export-components */
+import { lazy } from 'react'
 
 const Login = lazy(() => import('../../views/auth/Login'))
 const Register = lazy(() => import('../../views/auth/Register'))
 const AdminLogin = lazy(() => import('../../views/auth/AdminLogin'))
+const Home = lazy(() => import('../../views/Home'))
+const UnAuthorized = lazy(() => import('../../views/UnAuthorized'))
 
 const publicRoutes = [
   {
+    path: '/',
+    element: <Home />,
+  },
+  {
     path: '/login',
-    element: <Login/>,
+    element: <Login />,
   },
   {
     path: '/register',
-    element: <Register/>,
+    element: <Register />,
   },
   {
     path: '/admin/login',
-    element: <AdminLogin/>
-  }
+    element: <AdminLogin />,
+  },
+  {
+    path: '/unauthorized',
+    element: <UnAuthorized />,
+  },
 ]
 
 export default publicRoutes

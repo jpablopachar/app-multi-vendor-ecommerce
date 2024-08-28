@@ -1,19 +1,21 @@
+import dotenv from 'dotenv'
+
+dotenv.config()
+
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
-import dotenv from 'dotenv'
 import express from 'express'
 import morgan from 'morgan'
 import { PORT } from './config.js'
 import { authRouter } from './routes/auth/authRoutes.js'
-// import { swaggerDocs } from './routes/swagger.js'
 import { dbConnect } from './utils/db.js'
+
+// import { swaggerDocs } from './routes/swagger.js'
 
 const corsOptions = {
   origin : ['http://localhost:5173','http://localhost:4200'],
   credentials: true
 }
-
-dotenv.config()
 
 const app = express()
 
