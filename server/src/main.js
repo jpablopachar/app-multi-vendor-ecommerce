@@ -8,6 +8,7 @@ import express from 'express'
 import morgan from 'morgan'
 import { PORT } from './config.js'
 import { authRouter } from './routes/auth/authRoutes.js'
+import { categoryRouter } from './routes/dashboard/categoryRoutes.js'
 import { dbConnect } from './utils/db.js'
 
 // import { swaggerDocs } from './routes/swagger.js'
@@ -26,6 +27,7 @@ app.use(morgan('dev'))
 app.use(cors(corsOptions))
 
 app.use('/api/auth', authRouter)
+app.use('/api', categoryRouter)
 
 dbConnect().then(() => {
   app.listen(PORT, () => {
