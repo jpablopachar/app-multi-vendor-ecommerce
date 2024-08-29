@@ -1,33 +1,42 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import toast from 'react-hot-toast'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useParams } from 'react-router-dom'
+import { PropagateLoader } from 'react-spinners'
+import { getCategories } from '../../store/reducers/categoryReducer'
+import {
+  getProduct,
+  messageClear,
+  updateProduct,
+  updateProductImage,
+} from '../../store/reducers/productReducer'
+import { overrideStyle } from '../../utils/utils'
 
 const EditProduct = () => {
-  const categories = [
-    {
-      id: 1,
-      name: 'Sports',
-    },
-    {
-      id: 2,
-      name: 'Tshirt',
-    },
-    {
-      id: 3,
-      name: 'Mobile',
-    },
-    {
-      id: 4,
-      name: 'Computer',
-    },
-    {
-      id: 5,
-      name: 'Watch',
-    },
-    {
-      id: 6,
-      name: 'Pant',
-    },
-  ]
+  const { productId } = useParams()
+
+  const dispatch = useDispatch()
+
+  const { categories } = useSelector((state) => state.category)
+  const { product, loader, successMessage, errorMessage } = useSelector(
+    (state) => state.product
+  )
+
+  useEffect(() => {
+    dispatch(
+      getCategories({
+        searchValue: '',
+        parPage: '',
+        page: '',
+      })
+    )
+  }, [])
+
+  useEffect(() => {
+    dispatch(getProduct(productId))
+  }, [productId])
 
   const [state, setState] = useState({
     name: '',
@@ -50,8 +59,8 @@ const EditProduct = () => {
   const [allCategory, setAllCategory] = useState(categories)
   const [searchValue, setSearchValue] = useState('')
 
-  const categorySearch = (e) => {
-    const value = e.target.value
+  const categorySearch = (event) => {
+    const value = event.target.value
 
     setSearchValue(value)
 
@@ -66,34 +75,65 @@ const EditProduct = () => {
     }
   }
 
-  // const [images, setImages] = useState([])
   const [imageShow, setImageShow] = useState([])
 
   const changeImage = (img, files) => {
     if (files.length > 0) {
-      console.log(img)
-      console.log(files[0])
+      dispatch(
+        updateProductImage({ oldImage: img, newImage: files[0], productId })
+      )
     }
   }
 
   useEffect(() => {
     setState({
-      name: 'Mens tshirt',
-      description: 'Utilities for controlling how',
-      discount: 5,
-      price: 255,
-      brand: 'Easy',
-      stock: 10,
+      name: product.name,
+      description: product.description,
+      discount: product.discount,
+      price: product.price,
+      brand: product.brand,
+      stock: product.stock,
     })
 
-    setCategory('Tshirt')
+    setCategory(product.category)
+    setImageShow(product.images)
+  }, [product])
 
-    setImageShow([
-      'http://localhost:5173/src/assets/images/admin.jpg',
-      'http://localhost:5173/src/assets/images/demo.jpg',
-      'http://localhost:5173/src/assets/images/seller.png',
-    ])
-  }, [])
+  useEffect(() => {
+    if (categories.length > 0) {
+      setAllCategory(categories)
+    }
+  }, [categories])
+
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage)
+
+      dispatch(messageClear())
+    }
+
+    if (errorMessage) {
+      toast.error(errorMessage)
+
+      dispatch(messageClear())
+    }
+  }, [successMessage, errorMessage])
+
+  const update = (event) => {
+    event.preventDefault()
+
+    const obj = {
+      name: state.name,
+      description: state.description,
+      discount: state.discount,
+      price: state.price,
+      brand: state.brand,
+      stock: state.stock,
+      productId,
+    }
+
+    dispatch(updateProduct(obj))
+  }
 
   return (
     <div className="px-2 lg:px-7 pt-5">
@@ -108,7 +148,7 @@ const EditProduct = () => {
           </Link>
         </div>
         <div>
-          <form>
+          <form onSubmit={update}>
             <div className="flex flex-col mb-3 md:flex-row gap-4 w-full text-[#d0d2d6]">
               <div className="flex flex-col w-full gap-1">
                 <label htmlFor="name">Product Name</label>
@@ -148,7 +188,6 @@ const EditProduct = () => {
                   id="category"
                   placeholder="--select category--"
                 />
-
                 <div
                   className={`absolute top-[101%] bg-[#475569] w-full transition-all ${
                     cateShow ? 'scale-100' : 'scale-0'
@@ -164,23 +203,24 @@ const EditProduct = () => {
                     />
                   </div>
                   <div className="pt-14"></div>
-                  <div className="flex justify-start items-start flex-col h-[200px] overflow-x-scroll">
-                    {allCategory.map((c, i) => (
-                      <span
-                        key={i}
-                        className={`px-4 py-2 hover:bg-indigo-500 hover:text-white hover:shadow-lg w-full cursor-pointer ${
-                          category === c.name && 'bg-indigo-500'
-                        }`}
-                        onClick={() => {
-                          setCateShow(false)
-                          setCategory(c.name)
-                          setSearchValue('')
-                          setAllCategory(categories)
-                        }}
-                      >
-                        {c.name}{' '}
-                      </span>
-                    ))}
+                  <div className="flex justify-start items-start flex-col h-[200px] overflow-x-scrool">
+                    {allCategory.length > 0 &&
+                      allCategory.map((c, i) => (
+                        <span
+                          key={i}
+                          className={`px-4 py-2 hover:bg-indigo-500 hover:text-white hover:shadow-lg w-full cursor-pointer ${
+                            category === c.name && 'bg-indigo-500'
+                          }`}
+                          onClick={() => {
+                            setCateShow(false)
+                            setCategory(c.name)
+                            setSearchValue('')
+                            setAllCategory(categories)
+                          }}
+                        >
+                          {c.name}{' '}
+                        </span>
+                      ))}
                   </div>
                 </div>
               </div>
@@ -239,23 +279,32 @@ const EditProduct = () => {
               ></textarea>
             </div>
             <div className="grid lg:grid-cols-4 grid-cols-1 md:grid-cols-3 sm:grid-cols-2 sm:gap-4 md:gap-4 gap-3 w-full text-[#d0d2d6] mb-4">
-              {imageShow.map((img, i) => (
-                <div key={i}>
-                  <label htmlFor={i}>
-                    <img src={img} alt="" />
-                  </label>
-                  <input
-                    onChange={(e) => changeImage(img, e.target.files)}
-                    type="file"
-                    id={i}
-                    className="hidden"
-                  />
-                </div>
-              ))}
+              {imageShow &&
+                imageShow.length > 0 &&
+                imageShow.map((img, i) => (
+                  <div key={i}>
+                    <label htmlFor={i}>
+                      <img src={img} alt="" />
+                    </label>
+                    <input
+                      onChange={(e) => changeImage(img, e.target.files)}
+                      type="file"
+                      id={i}
+                      className="hidden"
+                    />
+                  </div>
+                ))}
             </div>
             <div className="flex">
-              <button className="bg-red-500  hover:shadow-red-500/40 hover:shadow-md text-white rounded-md px-7 py-2 my-2">
-                Save Changes
+              <button
+                disabled={loader ? true : false}
+                className="bg-red-500 w-[280px] hover:shadow-red-300/50 hover:shadow-lg text-white rounded-md px-7 py-2 mb-3"
+              >
+                {loader ? (
+                  <PropagateLoader color="#fff" cssOverride={overrideStyle} />
+                ) : (
+                  'Save Changes'
+                )}
               </button>
             </div>
           </form>

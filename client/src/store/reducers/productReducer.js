@@ -16,6 +16,25 @@ export const addProduct = createAsyncThunk(
   }
 )
 
+export const getProducts = createAsyncThunk(
+  'category/getProducts',
+  async (
+    { parPage, page, searchValue },
+    { rejectWithValue, fulfillWithValue }
+  ) => {
+    try {
+      const { data } = await api.get(
+        `/products-get?page=${page}&&searchValue=${searchValue}&&parPage=${parPage}`,
+        { withCredentials: true }
+      )
+
+      return fulfillWithValue(data)
+    } catch (error) {
+      return rejectWithValue(error.response.data)
+    }
+  }
+)
+
 export const getProduct = createAsyncThunk(
   'category/getProduct',
   async (
@@ -35,6 +54,45 @@ export const getProduct = createAsyncThunk(
   }
 )
 
+export const updateProduct = createAsyncThunk(
+  'product/updateProduct',
+  async (product, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.post('/product-update', product, {
+        withCredentials: true,
+      })
+
+      return fulfillWithValue(data)
+    } catch (error) {
+      return rejectWithValue(error.response.data)
+    }
+  }
+)
+
+export const updateProductImage = createAsyncThunk(
+  'product/updateProductImage',
+  async (
+    { oldImage, newImage, productId },
+    { rejectWithValue, fulfillWithValue }
+  ) => {
+    try {
+      const formData = new FormData()
+
+      formData.append('oldImage', oldImage)
+      formData.append('newImage', newImage)
+      formData.append('productId', productId)
+
+      const { data } = await api.post('/product-image-update', formData, {
+        withCredentials: true,
+      })
+
+      return fulfillWithValue(data)
+    } catch (error) {
+      return rejectWithValue(error.response.data)
+    }
+  }
+)
+
 export const productReducer = createSlice({
   name: 'product',
   initialState: {
@@ -42,6 +100,7 @@ export const productReducer = createSlice({
     errorMessage: '',
     loader: false,
     products: [],
+    product: '',
     totalProducts: 0,
   },
   reducers: {
@@ -63,9 +122,29 @@ export const productReducer = createSlice({
         state.successMessage = payload.message
         state.products = [...state.products, payload.category]
       })
-      .addCase(getProduct.fulfilled, (state, { payload }) => {
+      .addCase(getProducts.fulfilled, (state, { payload }) => {
         state.totalProducts = payload.totalProducts
         state.products = payload.products
+      })
+      .addCase(getProduct.fulfilled, (state, { payload }) => {
+        state.product = payload.product
+      })
+      .addCase(updateProduct.pending, (state) => {
+        state.loader = true
+      })
+      .addCase(updateProduct.rejected, (state, { payload }) => {
+        state.loader = false
+        state.errorMessage = payload.error
+      })
+      .addCase(updateProduct.fulfilled, (state, { payload }) => {
+        state.loader = false
+        state.product = payload.product
+        state.successMessage = payload.message
+      })
+
+      .addCase(updateProductImage.fulfilled, (state, { payload }) => {
+        state.product = payload.product
+        state.successMessage = payload.message
       })
   },
 })

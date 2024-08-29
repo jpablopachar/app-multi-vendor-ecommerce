@@ -39,7 +39,7 @@ export class ProductController {
       try {
         let allImageUrl = []
 
-        for (let i = 0; i < images.length; i++) {
+        for (let i = 0; i < images[0].length; i++) {
           const result = await cloudinary.uploader.upload(images[i].filepath, {
             folder: 'products',
           })
@@ -51,14 +51,14 @@ export class ProductController {
           sellerId: id,
           name,
           slug,
-          shopName,
-          category: category.trim(),
-          description: description.trim(),
-          stock: parseInt(stock),
-          price: parseInt(price),
-          discount: parseInt(discount),
+          shopName: shopName[0].trim(),
+          category: category[0].trim(),
+          description: description[0].trim(),
+          stock: parseInt(stock[0]),
+          price: parseInt(price[0]),
+          discount: parseInt(discount[0]),
           images: allImageUrl,
-          brand: brand.trim(),
+          brand: brand[0].trim(),
         })
 
         responseReturn(res, 201, { message: 'Product added successfully' })
