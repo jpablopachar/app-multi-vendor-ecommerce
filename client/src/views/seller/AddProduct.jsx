@@ -1,34 +1,32 @@
-import { useState } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import { IoMdCloseCircle, IoMdImages } from 'react-icons/io'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { PropagateLoader } from 'react-spinners'
+import { getCategories } from '../../store/reducers/categoryReducer'
+import { addProduct, messageClear } from '../../store/reducers/productReducer'
+import { overrideStyle } from '../../utils/utils'
 
 const AddProduct = () => {
-  const categories = [
-    {
-      id: 1,
-      name: 'Sports',
-    },
-    {
-      id: 2,
-      name: 'Tshirt',
-    },
-    {
-      id: 3,
-      name: 'Mobile',
-    },
-    {
-      id: 4,
-      name: 'Computer',
-    },
-    {
-      id: 5,
-      name: 'Watch',
-    },
-    {
-      id: 6,
-      name: 'Pant',
-    },
-  ]
+  const dispatch = useDispatch()
+
+  const { categories } = useSelector((state) => state.category)
+  const { loader, successMessage, errorMessage } = useSelector(
+    (state) => state.product
+  )
+
+  useEffect(() => {
+    dispatch(
+      getCategories({
+        searchValue: '',
+        parPage: '',
+        page: '',
+      })
+    )
+  }, [])
 
   const [state, setState] = useState({
     name: '',
@@ -83,6 +81,33 @@ const AddProduct = () => {
     }
   }
 
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage)
+
+      dispatch(messageClear())
+
+      setState({
+        name: '',
+        description: '',
+        discount: '',
+        price: '',
+        brand: '',
+        stock: '',
+      })
+
+      setImageShow([])
+      setImages([])
+      setCategory('')
+    }
+
+    if (errorMessage) {
+      toast.error(errorMessage)
+
+      dispatch(messageClear())
+    }
+  }, [successMessage, errorMessage])
+
   const changeImage = (img, index) => {
     if (img) {
       let tempUrl = imageShow
@@ -105,17 +130,45 @@ const AddProduct = () => {
     setImageShow(filterImageUrl)
   }
 
+  const add = (event) => {
+    event.preventDefault()
+
+    const formData = new FormData()
+
+    formData.append('name', state.name)
+    formData.append('description', state.description)
+    formData.append('price', state.price)
+    formData.append('stock', state.stock)
+    formData.append('discount', state.discount)
+    formData.append('brand', state.brand)
+    formData.append('shopName', 'EasyShop')
+    formData.append('category', category)
+
+    images.forEach((img) => {
+      formData.append('images', img)
+    })
+
+    dispatch(addProduct(formData))
+  }
+
+  useEffect(() => {
+    setAllCategory(categories)
+  }, [categories])
+
   return (
     <div className="px-2 lg:px-7 pt-5">
       <div className="w-full p-4 bg-[#6a5fdf] rounded-md">
         <div className="flex justify-between items-center pb-4">
           <h1 className="text-[#d0d2d6] text-xl font-semibold">Add Product</h1>
-          <Link to='/seller/dashboard/products' className="bg-blue-500 hover:shadow-blue-500/50 hover:shadow-lg text-white rounded-sm px-7 py-2 my-2">
+          <Link
+            to="/seller/dashboard/products"
+            className="bg-blue-500 hover:shadow-blue-500/50 hover:shadow-lg text-white rounded-sm px-7 py-2 my-2"
+          >
             All Product
           </Link>
         </div>
         <div>
-          <form>
+          <form onSubmit={add}>
             <div className="flex flex-col mb-3 md:flex-row gap-4 w-full text-[#d0d2d6]">
               <div className="flex flex-col w-full gap-1">
                 <label htmlFor="name">Product Name</label>
@@ -171,20 +224,20 @@ const AddProduct = () => {
                   </div>
                   <div className="pt-14"></div>
                   <div className="flex justify-start items-start flex-col h-[200px] overflow-x-scrool">
-                    {allCategory.map((c, i) => (
+                    {allCategory.map((currentCategory, i) => (
                       <span
                         key={i}
                         className={`px-4 py-2 hover:bg-indigo-500 hover:text-white hover:shadow-lg w-full cursor-pointer ${
-                          category === c.name && 'bg-indigo-500'
+                          category === currentCategory.name && 'bg-indigo-500'
                         }`}
                         onClick={() => {
                           setCateShow(false)
-                          setCategory(c.name)
+                          setCategory(currentCategory.name)
                           setSearchValue('')
                           setAllCategory(categories)
                         }}
                       >
-                        {c.name}{' '}
+                        {currentCategory.name}{' '}
                       </span>
                     ))}
                   </div>
@@ -286,8 +339,15 @@ const AddProduct = () => {
               />
             </div>
             <div className="flex">
-              <button className="bg-red-500  hover:shadow-red-500/40 hover:shadow-md text-white rounded-md px-7 py-2 my-2">
-                Add Product
+              <button
+                disabled={loader ? true : false}
+                className="bg-red-500 w-[280px] hover:shadow-red-300/50 hover:shadow-lg text-white rounded-md px-7 py-2 mb-3"
+              >
+                {loader ? (
+                  <PropagateLoader color="#fff" cssOverride={overrideStyle} />
+                ) : (
+                  'Add Category'
+                )}
               </button>
             </div>
           </form>
