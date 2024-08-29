@@ -16,7 +16,7 @@ export class CategoryController {
         let { name } = fields
         let { image } = files
 
-        name = name.trim()
+        name = name[0].trim()
 
         const slug = name.split(' ').join('-')
 
@@ -28,15 +28,15 @@ export class CategoryController {
         })
 
         try {
-          const res = await cloudinary.uploader.upload(image.filepath, {
+          const response = await cloudinary.uploader.upload(image[0].filepath, {
             folder: 'categories',
           })
 
-          if (res) {
+          if (response) {
             const category = await Category.create({
               name,
               slug,
-              image: res.url,
+              image: response.url,
             })
 
             responseReturn(res, 201, {
