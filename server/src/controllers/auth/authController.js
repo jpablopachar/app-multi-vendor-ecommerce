@@ -1,4 +1,8 @@
+/* eslint-disable no-undef */
+
 import { compare, hash } from 'bcrypt'
+import { v2 as cloudinary } from 'cloudinary'
+import formidable from 'formidable'
 import Admin from '../../models/admin.js'
 import SellerCustomers from '../../models/chat/seller-customer.js'
 import Seller from '../../models/seller.js'
@@ -110,6 +114,44 @@ export class AuthController {
     } catch {
       responseReturn(res, 500, { error: 'Internal Server Error' })
     }
+  }
+
+  profileImageUpload = async (req, res) => {
+    const { id } = req
+
+    const form = formidable({ multiples: true })
+
+    form.parse(req, async (err, _, files) => {
+      cloudinary.config({
+        cloud_name: process.env.CLOUD_NAME,
+        api_key: process.env.CLOUD_API_KEY,
+        api_secret: process.env.CLOUD_API_SECRET,
+        secure: true,
+      })
+
+      const { image } = files
+
+      try {
+        const result = await cloudinary.uploader.upload(image[0].filepath, {
+          folder: 'profile',
+        })
+
+        if (result) {
+          await Seller.findByIdAndUpdate(id, { image: result.url })
+
+          const userInfo = await Seller.findById(id)
+
+          responseReturn(res, 201, {
+            message: 'Profile image upload successfully',
+            userInfo,
+          })
+        } else {
+          responseReturn(res, 404, { error: 'Image upload failed' })
+        }
+      } catch (error) {
+        responseReturn(res, 500, { error: error.message })
+      }
+    })
   }
 
   profileInfoAdd = async (req, res) => {

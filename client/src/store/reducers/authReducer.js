@@ -34,6 +34,32 @@ export const getUserInfo = createAsyncThunk(
   }
 )
 
+export const profileImageUpload = createAsyncThunk(
+  'auth/profileImageUpload',
+  async (image, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.post('/auth/profile-image-upload',image,{ withCredentials: true })
+
+      return fulfillWithValue(data)
+    } catch (error) {
+      return rejectWithValue(error.response.data)
+    }
+  }
+)
+
+export const profileInfoAdd = createAsyncThunk(
+  'auth/profileInfoAdd',
+  async (info, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.post('/auth/profile-info-add',info,{ withCredentials: true })
+
+      return fulfillWithValue(data)
+    } catch (error) {
+      return rejectWithValue(error.response.data)
+    }
+  }
+)
+
 export const sellerLogin = createAsyncThunk(
   'auth/sellerLogin',
   async (info, { rejectWithValue, fulfillWithValue }) => {
@@ -142,6 +168,22 @@ export const authReducer = createSlice({
       .addCase(getUserInfo.fulfilled, (state, { payload }) => {
         state.loader = false
         state.userInfo = payload.userInfo
+      })
+      .addCase(profileImageUpload.pending, (state) => {
+        state.loader = true
+      })
+      .addCase(profileImageUpload.fulfilled, (state, { payload }) => {
+        state.loader = false
+        state.userInfo = payload.userInfo
+        state.successMessage = payload.message
+      })
+      .addCase(profileInfoAdd.pending, (state) => {
+        state.loader = true
+      })
+      .addCase(profileInfoAdd.fulfilled, (state, { payload }) => {
+        state.loader = false
+        state.userInfo = payload.userInfo
+        state.successMessage = payload.message
       })
   },
 })

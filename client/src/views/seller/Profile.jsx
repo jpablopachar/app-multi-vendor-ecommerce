@@ -1,12 +1,62 @@
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import { FaRegEdit } from 'react-icons/fa'
 import { FaImages } from 'react-icons/fa6'
-import { FadeLoader } from 'react-spinners'
+import { useDispatch, useSelector } from 'react-redux'
+import { FadeLoader, PropagateLoader } from 'react-spinners'
+import {
+  messageClear,
+  profileImageUpload,
+  profileInfoAdd,
+} from '../../store/reducers/authReducer'
+import { overrideStyle } from '../../utils/utils'
 
 const Profile = () => {
-  const image = true
-  const loader = true
+  const dispatch = useDispatch()
+
+  const { userInfo, loader, successMessage } = useSelector(
+    (state) => state.auth
+  )
+
   const status = 'active'
-  const userInfo = true
+
+  const [state, setState] = useState({
+    division: '',
+    district: '',
+    shopName: '',
+    subDistrict: '',
+  })
+
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage)
+
+      messageClear()
+    }
+  }, [successMessage])
+
+  const addImage = (event) => {
+    if (event.target.files[0]) {
+      const formData = new FormData()
+
+      formData.set('image', event.target.files[0])
+
+      dispatch(profileImageUpload(formData))
+    }
+  }
+
+  const inputHandle = (event) => {
+    setState({
+      ...state,
+      [event.target.name]: event.target.value,
+    })
+  }
+
+  const add = (event) => {
+    event.preventDefault()
+
+    dispatch(profileInfoAdd(state))
+  }
 
   return (
     <div className="px-2 lg:px-7 py-5">
@@ -14,13 +64,13 @@ const Profile = () => {
         <div className="w-full md:w-6/12">
           <div className="w-full p-4 bg-[#6a5fdf] rounded-md text-[#d0d2d6]">
             <div className="flex justify-center items-center py-3">
-              {image ? (
+              {userInfo?.image ? (
                 <label
                   htmlFor="img"
                   className="h-[150px] w-[200px] relative p-3 cursor-pointer overflow-hidden"
                 >
-                  <img src="http://localhost:5173/src/assets/images/demo.jpg" alt="" />
-                  {!loader && (
+                  <img src={userInfo.image} alt="" />
+                  {loader && (
                     <div className="bg-slate-600 absolute left-0 top-0 w-full h-full opacity-70 flex justify-center items-center z-20">
                       <span>
                         <FadeLoader />
@@ -46,7 +96,12 @@ const Profile = () => {
                   )}
                 </label>
               )}
-              <input type="file" className="hidden" id="img" />
+              <input
+                onChange={addImage}
+                type="file"
+                className="hidden"
+                id="img"
+              />
             </div>
             <div className="px-0 md:px-5 py-2">
               <div className="flex justify-between text-sm flex-col gap-2 p-4 bg-slate-800 rounded-md relative">
@@ -55,26 +110,26 @@ const Profile = () => {
                 </span>
                 <div className="flex gap-2">
                   <span>Name : </span>
-                  <span>Ariyan Khan</span>
+                  <span>{userInfo.name}</span>
                 </div>
                 <div className="flex gap-2">
                   <span>Email : </span>
-                  <span>ariyan@gmail.com</span>
+                  <span>{userInfo.email}</span>
                 </div>
                 <div className="flex gap-2">
                   <span>Role : </span>
-                  <span>Seller</span>
+                  <span>{userInfo.role}</span>
                 </div>
                 <div className="flex gap-2">
                   <span>Status : </span>
-                  <span>Active</span>
+                  <span>{userInfo.status}</span>
                 </div>
                 <div className="flex gap-2">
                   <span>Payment Account : </span>
                   <p>
                     {status === 'active' ? (
-                      <span className="bg-green-500 text-white text-xs cursor-pointer font-normal ml-2 px-2 py-0.5 rounded">
-                        Pending
+                      <span className="bg-red-500 text-white text-xs cursor-pointer font-normal ml-2 px-2 py-0.5 rounded">
+                        {userInfo.payment}
                       </span>
                     ) : (
                       <span className="bg-blue-500 text-white text-xs cursor-pointer font-normal ml-2 px-2 py-0.5 rounded">
@@ -86,11 +141,13 @@ const Profile = () => {
               </div>
             </div>
             <div className="px-0 md:px-5 py-2">
-              {!userInfo ? (
-                <form>
+              {!userInfo?.shopInfo ? (
+                <form onSubmit={add}>
                   <div className="flex flex-col w-full gap-1 mb-2">
                     <label htmlFor="Shop">Shop Name</label>
                     <input
+                      value={state.shopName}
+                      onChange={inputHandle}
                       className="px-4 py-2 focus:border-indigo-200 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]"
                       type="text"
                       name="shopName"
@@ -98,10 +155,11 @@ const Profile = () => {
                       placeholder="Shop Name"
                     />
                   </div>
-
                   <div className="flex flex-col w-full gap-1 mb-2">
                     <label htmlFor="division">Division Name</label>
                     <input
+                      value={state.division}
+                      onChange={inputHandle}
                       className="px-4 py-2 focus:border-indigo-200 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]"
                       type="text"
                       name="division"
@@ -109,10 +167,11 @@ const Profile = () => {
                       placeholder="division Name"
                     />
                   </div>
-
                   <div className="flex flex-col w-full gap-1 mb-2">
                     <label htmlFor="district">District Name</label>
                     <input
+                      value={state.district}
+                      onChange={inputHandle}
                       className="px-4 py-2 focus:border-indigo-200 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]"
                       type="text"
                       name="district"
@@ -121,18 +180,29 @@ const Profile = () => {
                     />
                   </div>
                   <div className="flex flex-col w-full gap-1 mb-2">
-                    <label htmlFor="subdis">Sub District Name</label>
+                    <label htmlFor="sub">Sub District Name</label>
                     <input
+                      value={state.sub_district}
+                      onChange={inputHandle}
                       className="px-4 py-2 focus:border-indigo-200 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]"
                       type="text"
-                      name="subdis"
-                      id="subdis"
+                      name="sub_district"
+                      id="sub"
                       placeholder="Sub District Name"
                     />
                   </div>
-
-                  <button className="bg-red-500  hover:shadow-red-500/40 hover:shadow-md text-white rounded-md px-7 py-2 my-2">
-                    Save Changes
+                  <button
+                    disabled={loader ? true : false}
+                    className="bg-red-500 w-[200px] hover:shadow-red-300/50 hover:shadow-lg text-white rounded-md px-7 py-2 mb-3"
+                  >
+                    {loader ? (
+                      <PropagateLoader
+                        color="#fff"
+                        cssOverride={overrideStyle}
+                      />
+                    ) : (
+                      'Save Changes'
+                    )}
                   </button>
                 </form>
               ) : (
@@ -142,19 +212,19 @@ const Profile = () => {
                   </span>
                   <div className="flex gap-2">
                     <span>Shop Name : </span>
-                    <span>Easy Shop</span>
+                    <span>{userInfo.shopInfo?.shopName}</span>
                   </div>
                   <div className="flex gap-2">
                     <span>Divission : </span>
-                    <span>Dhaka</span>
+                    <span>{userInfo.shopInfo?.division}</span>
                   </div>
                   <div className="flex gap-2">
                     <span>District : </span>
-                    <span>Rajbari</span>
+                    <span>{userInfo.shopInfo?.district}</span>
                   </div>
                   <div className="flex gap-2">
                     <span>Sub District : </span>
-                    <span>Vola</span>
+                    <span>{userInfo.shopInfo?.sub_district}</span>
                   </div>
                 </div>
               )}
