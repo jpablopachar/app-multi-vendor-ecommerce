@@ -21,7 +21,7 @@
       "type": "msedge",
       "request": "launch",
       "name": "Launch React",
-      "url": "http://localhost:5173",
+      "url": "http://localhost:5173/",
       "webRoot": "${workspaceFolder}"
     },
     {

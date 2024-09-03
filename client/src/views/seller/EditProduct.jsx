@@ -47,16 +47,16 @@ const EditProduct = () => {
     stock: '',
   })
 
-  const inputHandle = (e) => {
+  const inputHandle = (event) => {
     setState({
       ...state,
-      [e.target.name]: e.target.value,
+      [event.target.name]: event.target.value,
     })
   }
 
   const [cateShow, setCateShow] = useState(false)
   const [category, setCategory] = useState('')
-  const [allCategory, setAllCategory] = useState(categories)
+  const [allCategory, setAllCategory] = useState([])
   const [searchValue, setSearchValue] = useState('')
 
   const categorySearch = (event) => {
@@ -155,7 +155,7 @@ const EditProduct = () => {
                 <input
                   className="px-4 py-2 focus:border-indigo-500 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]"
                   onChange={inputHandle}
-                  value={state.name}
+                  value={state.name || ''}
                   type="text"
                   name="name"
                   id="name"
@@ -167,7 +167,7 @@ const EditProduct = () => {
                 <input
                   className="px-4 py-2 focus:border-indigo-500 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]"
                   onChange={inputHandle}
-                  value={state.brand}
+                  value={state.brand || ''}
                   type="text"
                   name="brand"
                   id="brand"
@@ -183,7 +183,7 @@ const EditProduct = () => {
                   onClick={() => setCateShow(!cateShow)}
                   className="px-4 py-2 focus:border-indigo-500 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]"
                   onChange={inputHandle}
-                  value={category}
+                  value={category || ''}
                   type="text"
                   id="category"
                   placeholder="--select category--"
@@ -195,7 +195,7 @@ const EditProduct = () => {
                 >
                   <div className="w-full px-4 py-2 fixed">
                     <input
-                      value={searchValue}
+                      value={searchValue || ''}
                       onChange={categorySearch}
                       className="px-3 py-1 w-full focus:border-indigo-500 outline-none bg-transparent border border-slate-700 rounded-md text-[#d0d2d6] overflow-hidden"
                       type="text"
@@ -229,7 +229,7 @@ const EditProduct = () => {
                 <input
                   className="px-4 py-2 focus:border-indigo-500 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]"
                   onChange={inputHandle}
-                  value={state.stock}
+                  value={state.stock || ''}
                   type="text"
                   name="stock"
                   id="stock"
@@ -243,7 +243,7 @@ const EditProduct = () => {
                 <input
                   className="px-4 py-2 focus:border-indigo-500 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]"
                   onChange={inputHandle}
-                  value={state.price}
+                  value={state.price || ''}
                   type="number"
                   name="price"
                   id="price"
@@ -255,7 +255,7 @@ const EditProduct = () => {
                 <input
                   className="px-4 py-2 focus:border-indigo-500 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]"
                   onChange={inputHandle}
-                  value={state.discount}
+                  value={state.discount || ''}
                   type="number"
                   name="discount"
                   id="discount"
@@ -270,7 +270,7 @@ const EditProduct = () => {
               <textarea
                 className="px-4 py-2 focus:border-indigo-500 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]"
                 onChange={inputHandle}
-                value={state.description}
+                value={state.description || ''}
                 name="description"
                 id="description"
                 placeholder="Description"

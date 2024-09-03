@@ -9,33 +9,37 @@ const ProtectRoute = ({ route, children }) => {
 
   if (route.role) {
     if (userInfo) {
-      if (userInfo.role !== route.role)
-        return <Navigate to="/unauthorized" replace />
-
-      if (route.status) {
-        if (route.status === userInfo.status) {
-          return <Suspense fallback={null}>{children}</Suspense>
-        } else {
-          if (userInfo.status === 'pending') {
-            return <Navigate to="/seller/account-pending" replace />
+      if (userInfo.role === route.role) {
+        if (route.status) {
+          if (route.status === userInfo.status) {
+            return <Suspense fallback={null}>{children}</Suspense>
           } else {
-            return <Navigate to="/seller/account-deactive" replace />
+            if (userInfo.status === 'pending') {
+              return <Navigate to="/seller/account-pending" replace />
+            } else {
+              return <Navigate to="/seller/account-deactive" replace />
+            }
+          }
+        } else {
+          if (route.visibility) {
+            if (route.visibility.some((r) => r === userInfo.status)) {
+              return <Suspense fallback={null}>{children}</Suspense>
+            } else {
+              return <Navigate to="/seller/account-pending" replace />
+            }
+          } else {
+            return <Suspense fallback={null}>{children}</Suspense>
           }
         }
       } else {
-        if (route.visibility) {
-          if (route.visibility.some((r) => r === userInfo.status)) {
-            return <Suspense fallback={null}>{children}</Suspense>
-          } else {
-            return <Navigate to="/seller/account-pending" replace />
-          }
-        } else {
-          return <Suspense fallback={null}>{children}</Suspense>
-        }
+        return <Navigate to="/unauthorized" replace />
       }
     }
-  } else if (route.ability === 'seller')
-    return <Suspense fallback={null}>{children}</Suspense>
+  } else {
+    if (route.ability === 'seller') {
+      return <Suspense fallback={null}>{children}</Suspense>
+    }
+  }
 }
 
 export default ProtectRoute

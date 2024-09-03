@@ -17,7 +17,7 @@ export const addProduct = createAsyncThunk(
 )
 
 export const getProducts = createAsyncThunk(
-  'category/getProducts',
+  'product/getProducts',
   async (
     { parPage, page, searchValue },
     { rejectWithValue, fulfillWithValue }
@@ -36,16 +36,12 @@ export const getProducts = createAsyncThunk(
 )
 
 export const getProduct = createAsyncThunk(
-  'category/getProduct',
-  async (
-    { parPage, page, searchValue },
-    { rejectWithValue, fulfillWithValue }
-  ) => {
+  'product/getProduct',
+  async (productId, { rejectWithValue, fulfillWithValue }) => {
     try {
-      const { data } = await api.get(
-        `/category-get?page=${page}&&searchValue=${searchValue}&&parPage=${parPage}`,
-        { withCredentials: true }
-      )
+      const { data } = await api.get(`/product-get/${productId}`, {
+        withCredentials: true,
+      })
 
       return fulfillWithValue(data)
     } catch (error) {
@@ -120,7 +116,6 @@ export const productReducer = createSlice({
       .addCase(addProduct.fulfilled, (state, { payload }) => {
         state.loader = false
         state.successMessage = payload.message
-        state.products = [...state.products, payload.category]
       })
       .addCase(getProducts.fulfilled, (state, { payload }) => {
         state.totalProducts = payload.totalProducts
@@ -141,7 +136,6 @@ export const productReducer = createSlice({
         state.product = payload.product
         state.successMessage = payload.message
       })
-
       .addCase(updateProductImage.fulfilled, (state, { payload }) => {
         state.product = payload.product
         state.successMessage = payload.message

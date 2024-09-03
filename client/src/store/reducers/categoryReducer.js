@@ -28,8 +28,6 @@ export const getCategories = createAsyncThunk(
     { rejectWithValue, fulfillWithValue }
   ) => {
     try {
-      console.log(parPage, page, searchValue);
-      
       const { data } = await api.get(
         `/category-get?page=${page}&&searchValue=${searchValue}&&parPage=${parPage}`,
         {
