@@ -14,6 +14,7 @@ module.exports = tseslint.config(
     ],
     processor: angular.processInlineTemplates,
     rules: {
+      "no-useless-escape": "off",
       "@angular-eslint/directive-selector": [
         "error",
         {
