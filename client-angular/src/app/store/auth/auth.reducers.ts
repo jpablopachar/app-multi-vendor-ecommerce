@@ -17,6 +17,10 @@ const authFeature = createFeature({
   name: 'auth',
   reducer: createReducer(
     authInitialState,
+    on(authActions.messageClear, (state: AuthState) => ({
+      ...state,
+      errorMessage: '',
+    })),
     on(authActions.adminLogin, (state: AuthState) => ({
       ...state,
       loader: true,
@@ -33,9 +37,45 @@ const authFeature = createFeature({
       loader: false,
       errorMessage: action.error,
     })),
-    on(authActions.messageClear, (state: AuthState) => ({
+    on(authActions.sellerLogin, (state: AuthState) => ({
       ...state,
-      errorMessage: '',
+      loader: true,
+    })),
+    on(authActions.sellerLoginSuccess, (state: AuthState, action) => ({
+      ...state,
+      loader: false,
+      successMessage: action.response.message,
+      token: action.response.token,
+      role: returnRole(action.response.token),
+    })),
+    on(authActions.sellerLoginError, (state: AuthState, action) => ({
+      ...state,
+      loader: false,
+      errorMessage: action.error,
+    })),
+    on(authActions.sellerRegister, (state: AuthState) => ({
+      ...state,
+      loader: true,
+    })),
+    on(authActions.sellerRegisterSuccess, (state: AuthState, action) => ({
+      ...state,
+      loader: false,
+      successMessage: action.response.message,
+      token: action.response.token,
+      role: returnRole(action.response.token),
+    })),
+    on(authActions.sellerRegisterError, (state: AuthState, action) => ({
+      ...state,
+      loader: false,
+      errorMessage: action.error,
+    })),
+    on(authActions.getUserInfo, (state: AuthState) => ({
+      ...state,
+    })),
+    on(authActions.getUserInfoSuccess, (state: AuthState, action) => ({
+      ...state,
+      loader: false,
+      userInfo: action.response.userInfo,
     }))
   ),
 });
@@ -46,4 +86,5 @@ export const {
   selectLoader,
   selectSuccessMessage,
   selectErrorMessage,
+  selectUserInfo,
 } = authFeature;

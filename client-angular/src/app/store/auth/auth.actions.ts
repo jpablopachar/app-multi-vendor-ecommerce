@@ -1,12 +1,20 @@
-import { AuthResponse, LoginUser } from '@app/models'
+import { AuthResponse, GetUserResponse, LoginUser, RegisterUser } from '@app/models'
 import { createActionGroup, emptyProps, props } from '@ngrx/store'
 
 export const authActions = createActionGroup({
   source: 'Auth',
   events: {
+    messageClear: emptyProps(),
     AdminLogin: props<{ request: LoginUser }>(),
     AdminLoginSuccess: props<{ response: AuthResponse }>(),
     AdminLoginError: props<{ error: string }>(),
-    messageClear: emptyProps(),
+    SellerLogin: props<{ request: LoginUser }>(),
+    SellerLoginSuccess: props<{ response: AuthResponse }>(),
+    SellerLoginError: props<{ error: string }>(),
+    SellerRegister: props<{ request: RegisterUser }>(),
+    SellerRegisterSuccess: props<{ response: AuthResponse }>(),
+    SellerRegisterError: props<{ error: string }>(),
+    GetUserInfo: emptyProps(),
+    GetUserInfoSuccess: props<{ response: GetUserResponse }>(),
   }
 })
