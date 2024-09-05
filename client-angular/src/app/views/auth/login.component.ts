@@ -13,6 +13,8 @@ import {
   selectLoader,
   selectSuccessMessage,
 } from '@app/store'
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
+import { faArrowAltCircleLeft } from '@fortawesome/free-solid-svg-icons'
 import { Store } from '@ngrx/store'
 import { ToastrService } from 'ngx-toastr'
 import { Observable, Subject, Subscription, takeUntil } from 'rxjs'
@@ -20,7 +22,7 @@ import { Observable, Subject, Subscription, takeUntil } from 'rxjs'
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, FontAwesomeModule],
   template: `<div
     class="min-w-screen min-h-screen bg-[#cdcae9] flex justify-center items-center"
   >
@@ -80,6 +82,7 @@ import { Observable, Subject, Subscription, takeUntil } from 'rxjs'
               class="w-[135px] h-[35px] flex rounded-md bg-orange-700 shadow-lg hover:shadow-orange-700/50 justify-center cursor-pointer items-center overflow-hidden"
             >
               <span>
+                <fa-icon [icon]="faArrowAltCircleLeft"></fa-icon>
                 <!-- <FaGoogle /> -->
                 Google
               </span>
@@ -105,6 +108,8 @@ export class LoginComponent implements OnDestroy {
   private readonly _router: Router = inject(Router);
 
   private _destroy$: Subject<void> = new Subject<void>();
+
+  public faArrowAltCircleLeft = faArrowAltCircleLeft;
 
   public loader$: Observable<boolean> = this._store.select(selectLoader);
 

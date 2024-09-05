@@ -22,24 +22,32 @@ export class AuthService {
   }
 
   public adminLogin(body: LoginUser): Observable<AuthResponse> {
-    return this._http.post<AuthResponse>(`${this._url}/auth/admin-login`, body);
+    return this._http.post<AuthResponse>(
+      `${this._url}/auth/admin-login`,
+      body,
+      { withCredentials: true }
+    );
   }
 
   public sellerLogin(body: LoginUser): Observable<AuthResponse> {
     return this._http.post<AuthResponse>(
       `${this._url}/auth/seller-login`,
-      body
+      body,
+      { withCredentials: true }
     );
   }
 
   public sellerRegister(body: RegisterUser): Observable<AuthResponse> {
     return this._http.post<AuthResponse>(
       `${this._url}/auth/seller-register`,
-      body
+      body,
+      { withCredentials: true }
     );
   }
 
   public getUserInfo(): Observable<GetUserResponse> {
-    return this._http.get<GetUserResponse>(`${this._url}/auth/get-user`);
+    return this._http.get<GetUserResponse>(`${this._url}/auth/get-user`, {
+      withCredentials: true,
+    });
   }
 }

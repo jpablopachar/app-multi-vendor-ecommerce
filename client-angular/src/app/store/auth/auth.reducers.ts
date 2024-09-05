@@ -87,4 +87,5 @@ export const {
   selectSuccessMessage,
   selectErrorMessage,
   selectUserInfo,
+  selectToken,
 } = authFeature;
