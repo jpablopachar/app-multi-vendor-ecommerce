@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule, NgForm } from '@angular/forms'
+import { AuthStore } from '@app/store'
 
 @Component({
   selector: 'app-admin-login',
@@ -56,7 +57,11 @@ import { FormsModule, NgForm } from '@angular/forms'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminLoginComponent {
+  private readonly authStore = inject(AuthStore);
+
   public submit(form: NgForm): void {
-    console.log(form);
+    if (form.valid) {
+      this.authStore.adminLogin(form.value);
+    }
   }
 }

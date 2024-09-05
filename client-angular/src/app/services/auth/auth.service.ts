@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
+import { AuthResponse, LoginUser } from '@app/models'
 import { environment } from '@src/environments/environment'
 import { Observable } from 'rxjs'
 
@@ -7,21 +8,15 @@ import { Observable } from 'rxjs'
   providedIn: 'root',
 })
 export class AuthService {
-  private _http: HttpClient;
+  private _http: HttpClient = inject(HttpClient);
+
   private _url: string;
 
   constructor() {
-    this._http = inject(HttpClient);
     this._url = environment.url;
   }
 
-  public adminLogin(
-    email: string,
-    password: string
-  ): Observable<{ token: string; message: string }> {
-    return this._http.post<{ token: string; message: string }>(
-      `${this._url}/admin/login`,
-      { email, password }
-    );
+  public adminLogin(body: LoginUser): Observable<AuthResponse> {
+    return this._http.post<AuthResponse>(`${this._url}/auth/admin-login`, body);
   }
 }

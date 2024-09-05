@@ -3,4 +3,6 @@ export interface AuthState {
   errorMessage: string;
   loader: boolean;
   userInfo: string;
+  role: string;
+  token: string | null;
 }
