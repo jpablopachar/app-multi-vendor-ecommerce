@@ -1,4 +1,4 @@
-import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClient, withInterceptors } from '@angular/common/http'
 import {
   ApplicationConfig,
   isDevMode,
@@ -11,6 +11,7 @@ import { provideState, provideStore } from '@ngrx/store'
 import { provideStoreDevtools } from '@ngrx/store-devtools'
 import { provideToastr } from 'ngx-toastr'
 import { routes } from './app.routes'
+import { cookiesInterceptor } from './interceptors'
 import { AuthEffects, authFeatureKey, authReducer } from './store'
 
 export const appConfig: ApplicationConfig = {
@@ -22,7 +23,7 @@ export const appConfig: ApplicationConfig = {
       preventDuplicates: true,
     }),
     provideRouter(routes),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([cookiesInterceptor])),
     provideStore(),
     provideState(authFeatureKey, authReducer),
     provideEffects(AuthEffects),

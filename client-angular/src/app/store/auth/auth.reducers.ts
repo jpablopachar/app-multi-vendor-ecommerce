@@ -1,4 +1,3 @@
-// import {routerNavigationAction} from '@ngrx/router-store'
 import { returnRole } from '@app/utils'
 import { createFeature, createReducer, on } from '@ngrx/store'
 import { authActions } from './auth.actions'
