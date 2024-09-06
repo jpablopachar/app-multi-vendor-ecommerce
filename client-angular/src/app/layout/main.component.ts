@@ -11,7 +11,7 @@ import { SidebarComponent } from './sidebar.component'
   template: `
     <div class="bg-[#cdcae9] w-full min-h-screen">
       <app-header></app-header>
-      <app-sidebar></app-sidebar>
+      <app-sidebar [showSidebar]="showSidebar" (setShowSidebar)="showSidebar = $event"></app-sidebar>
       <div className="ml-0 lg:ml-[260px] pt-[95px] transition-all">
         <router-outlet />
       </div>
@@ -19,4 +19,6 @@ import { SidebarComponent } from './sidebar.component'
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MainComponent {}
+export class MainComponent {
+  public showSidebar = false;
+}

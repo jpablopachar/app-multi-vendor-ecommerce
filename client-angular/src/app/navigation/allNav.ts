@@ -1,3 +1,4 @@
+import { NavType } from '@app/models'
 import {
   faCartShopping,
   faCodePullRequest,
@@ -13,7 +14,7 @@ import {
   faUsersLine,
 } from '@fortawesome/free-solid-svg-icons'
 
-export const allNav = [
+export const allNav: NavType[] = [
   {
     id: 1,
     title: 'Dashboard',
