@@ -16,6 +16,12 @@ export const AdminRoutes: Routes = [
         canActivate: [protectRouteGuard],
         data: { role: 'admin' }
       },
+      {
+        path: 'dashboard/category',
+        loadComponent: () => import('../views/admin/category.component').then(c => c.CategoryComponent),
+        canActivate: [protectRouteGuard],
+        data: { role: 'admin' }
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full', }
     ]
   },
