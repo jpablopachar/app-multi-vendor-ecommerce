@@ -6,7 +6,7 @@ import {
   type CanActivateFn,
 } from '@angular/router'
 import { GetUser } from '@app/models'
-import { selectRole, selectUserInfo } from '@app/store'
+import { selectRole, selectUserInfo } from '@app/store/auth'
 import { Store } from '@ngrx/store'
 
 export const protectRouteGuard: CanActivateFn = (

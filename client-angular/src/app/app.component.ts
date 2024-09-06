@@ -2,7 +2,7 @@ import { Component, inject, OnDestroy } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
 import { Store } from '@ngrx/store'
 import { Subscription } from 'rxjs'
-import { authActions, selectToken } from './store'
+import { authActions, selectToken } from './store/auth'
 
 @Component({
   selector: 'app-root',

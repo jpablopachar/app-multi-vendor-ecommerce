@@ -12,7 +12,7 @@ import {
   selectErrorMessage,
   selectLoader,
   selectSuccessMessage,
-} from '@app/store'
+} from '@app/store/auth'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import { faArrowAltCircleLeft } from '@fortawesome/free-solid-svg-icons'
 import { Store } from '@ngrx/store'

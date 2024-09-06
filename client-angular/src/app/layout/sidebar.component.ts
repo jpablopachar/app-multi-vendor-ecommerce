@@ -12,7 +12,7 @@ import {
 import { Router, RouterLink } from '@angular/router'
 import { NavType } from '@app/models'
 import { getNav } from '@app/navigation'
-import { selectRole } from '@app/store'
+import { selectRole } from '@app/store/auth'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import {
   faRightFromBracket,

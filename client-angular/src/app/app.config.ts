@@ -12,7 +12,8 @@ import { provideStoreDevtools } from '@ngrx/store-devtools'
 import { provideToastr } from 'ngx-toastr'
 import { routes } from './app.routes'
 import { cookiesInterceptor } from './interceptors'
-import { AuthEffects, authFeatureKey, authReducer } from './store'
+import { AuthEffects, authFeatureKey, authReducer } from './store/auth'
+import { CategoryEffects, categoryFeatureKey, categoryReducer } from './store/category'
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,7 +27,8 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([cookiesInterceptor])),
     provideStore(),
     provideState(authFeatureKey, authReducer),
-    provideEffects(AuthEffects),
+    provideState(categoryFeatureKey, categoryReducer),
+    provideEffects(AuthEffects, CategoryEffects),
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),

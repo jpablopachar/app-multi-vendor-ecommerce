@@ -17,7 +17,7 @@ import {
   selectErrorMessage,
   selectLoader,
   selectSuccessMessage,
-} from '@app/store'
+} from '@app/store/auth'
 import { Store } from '@ngrx/store'
 import { ToastrService } from 'ngx-toastr'
 import { Observable, Subject, Subscription, takeUntil } from 'rxjs'
