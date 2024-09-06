@@ -1,4 +1,5 @@
 import { Routes } from "@angular/router"
+import { protectRouteGuard } from "@app/guards"
 
 export const AdminRoutes: Routes = [
   {
@@ -11,7 +12,9 @@ export const AdminRoutes: Routes = [
     children: [
       {
         path: 'dashboard',
-        loadComponent: () => import('../views/admin/admin-dashboard.component').then(c => c.AdminDashboardComponent)
+        loadComponent: () => import('../views/admin/admin-dashboard.component').then(c => c.AdminDashboardComponent),
+        canActivate: [protectRouteGuard],
+        data: { role: 'admin' }
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full', }
     ]

@@ -18,7 +18,7 @@ import { SidebarComponent } from './sidebar.component'
         [showSidebar]="showSidebar"
         (setShowSidebar)="showSidebar = $event"
       ></app-sidebar>
-      <div className="ml-0 lg:ml-[260px] pt-[95px] transition-all">
+      <div class="ml-0 lg:ml-[260px] pt-[95px] transition-all">
         <router-outlet />
       </div>
     </div>

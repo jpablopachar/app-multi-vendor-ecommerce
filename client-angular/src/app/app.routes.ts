@@ -8,7 +8,8 @@ export const routes: Routes = [
   },
   {
     path: 'seller',
-    loadComponent: () => import('./layout/main.component').then(c => c.MainComponent),
+    loadComponent: () =>
+      import('./layout/main.component').then((c) => c.MainComponent),
     loadChildren: () =>
       import('./router/seller.routes').then((r) => r.SellerRoutes),
   },
@@ -38,6 +39,6 @@ export const routes: Routes = [
         (c) => c.PageNotFoundComponent
       ),
   },
-  { path: '', redirectTo: 'login', pathMatch: 'full', },
-  { path: '**', redirectTo: 'not-found', pathMatch: 'full', },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '**', redirectTo: 'not-found', pathMatch: 'full' },
 ];
