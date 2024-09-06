@@ -11,11 +11,11 @@ import { Store } from '@ngrx/store'
 
 export const protectRouteGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot
-) => {
+): boolean | Promise<boolean> => {
   const store = inject(Store);
   const router = inject(Router);
 
-  const $role = toSignal(store.select(selectRole));
+  const $role: Signal<string | undefined> = toSignal(store.select(selectRole));
   const $userInfo: Signal<string | GetUser | undefined> = toSignal(
     store.select(selectUserInfo)
   );
