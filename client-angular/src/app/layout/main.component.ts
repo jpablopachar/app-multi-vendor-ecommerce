@@ -10,8 +10,14 @@ import { SidebarComponent } from './sidebar.component'
   imports: [CommonModule, RouterOutlet, HeaderComponent, SidebarComponent],
   template: `
     <div class="bg-[#cdcae9] w-full min-h-screen">
-      <app-header></app-header>
-      <app-sidebar [showSidebar]="showSidebar" (setShowSidebar)="showSidebar = $event"></app-sidebar>
+      <app-header
+        [showSidebar]="showSidebar"
+        (setShowSidebar)="showSidebar = $event"
+      ></app-header>
+      <app-sidebar
+        [showSidebar]="showSidebar"
+        (setShowSidebar)="showSidebar = $event"
+      ></app-sidebar>
       <div className="ml-0 lg:ml-[260px] pt-[95px] transition-all">
         <router-outlet />
       </div>
