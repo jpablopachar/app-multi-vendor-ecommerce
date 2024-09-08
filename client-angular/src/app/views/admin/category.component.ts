@@ -4,9 +4,18 @@ import {
   Component,
   effect,
   inject,
+  Signal,
   signal,
 } from '@angular/core'
+import {
+  FormControl,
+  FormGroup,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms'
 import { SearchComponent } from '@app/components/search.component'
+import { Category, CategoryRequestForm } from '@app/models'
 import {
   categoryActions,
   selectCategories,
@@ -15,10 +24,13 @@ import {
   selectSuccessMessage,
 } from '@app/store/category'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
-import { faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCircleXmark,
+  faPenToSquare,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons'
 import { Store } from '@ngrx/store'
 import { ToastrService } from 'ngx-toastr'
-import { Observable } from 'rxjs'
 import { PaginationComponent } from '../pagination.component'
 
 @Component({
@@ -26,6 +38,7 @@ import { PaginationComponent } from '../pagination.component'
   standalone: true,
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     FontAwesomeModule,
     SearchComponent,
     PaginationComponent,
@@ -35,26 +48,43 @@ import { PaginationComponent } from '../pagination.component'
 })
 export class CategoryComponent {
   private readonly _store = inject(Store);
+  private readonly _formBuilder: NonNullableFormBuilder = inject(
+    NonNullableFormBuilder
+  );
   private readonly _toastr: ToastrService = inject(ToastrService);
 
   public $currentPage = signal(1);
   public $searchValue = signal('');
   public $parPage = signal(5);
+  public $show = signal(false);
 
   public fanPenToSquare = faPenToSquare;
   public faTrash = faTrash;
-  public show = false;
+  public faCircleXmark = faCircleXmark;
   public imageShow = '';
   public state = { name: '', image: '' };
 
-  public loader$: Observable<boolean> = this._store.select(selectLoader);
+  public categoryForm: FormGroup<CategoryRequestForm>;
 
-  public $categories = this._store.selectSignal(selectCategories);
+  public $loader: Signal<boolean> = this._store.selectSignal(selectLoader);
 
-  public $errorMessage = this._store.selectSignal(selectErrorMessage);
-  public $successMessage = this._store.selectSignal(selectSuccessMessage);
+  public $categories: Signal<Category[]> = this._store.selectSignal(selectCategories);
+
+  public $errorMessage: Signal<string> = this._store.selectSignal(selectErrorMessage);
+  public $successMessage: Signal<string> = this._store.selectSignal(selectSuccessMessage);
 
   constructor() {
+    this.categoryForm = this._formBuilder.group({
+      name: new FormControl<string>('', {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
+      image: new FormControl<string>('', {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
+    });
+
     effect(
       (): void => {
         const obj = {
@@ -79,27 +109,13 @@ export class CategoryComponent {
     });
   }
 
-  /* public errorMessage$: Subscription = this._store
-    .select(selectErrorMessage)
-    .pipe(takeUntil(this._destroy$))
-    .subscribe((message: string): void => {
-      if (message.length > 0) {
-        this._toastr.error(message);
-
-        this._store.dispatch(categoryActions.messageClear());
-      }
-    });
-
-  public successMessage$: Subscription = this._store
-    .select(selectSuccessMessage)
-    .pipe(takeUntil(this._destroy$))
-    .subscribe((message: string): void => {
-      if (message.length > 0) {
-        this._toastr.success(message);
-
-        this._store.dispatch(categoryActions.messageClear());
-
-        // Limpiar el formulario
-      }
-    }); */
+  public submit(): void {
+    if (this.categoryForm.valid) {
+      this._store.dispatch(
+        categoryActions.categoryAdd({
+          request: this.categoryForm.getRawValue(),
+        })
+      );
+    }
+  }
 }
