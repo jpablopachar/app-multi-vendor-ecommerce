@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   EventEmitter,
   Output,
@@ -17,24 +16,14 @@ import {
   FaIconComponent,
   FontAwesomeModule,
 } from '@fortawesome/angular-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
 
 @Component({
   selector: 'app-pagination',
   standalone: true,
   imports: [CommonModule, FontAwesomeModule],
-  template: `
-    <ul class="flex gap-3" #btns>
-      <!-- <li
-        class="w-[33px] h-[33px] rounded-full flex justify-center items-center bg-slate-300 text-[#000000] cursor-pointer"
-        (keypress)="('')"
-        tabindex="0"
-        (click)="setPageNumber.emit($pageNumber() - 1)"
-      >
-        <fa-icon [icon]="faAngleRight"></fa-icon>
-      </li> -->
-    </ul>
-  `,
+  template: ` <ul class="flex gap-3" #btns></ul> `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaginationComponent {
@@ -49,8 +38,6 @@ export class PaginationComponent {
   @Output() setPageNumber = new EventEmitter<number>();
 
   private _renderer = inject(Renderer2);
-  private _cdr = inject(ChangeDetectorRef);
-  // private _viewContainerRef = inject(ViewContainerRef);
 
   public $totalPage = signal(0);
   public $startPage = signal(0);
@@ -60,6 +47,8 @@ export class PaginationComponent {
   public faAngleLeft = faAngleLeft;
 
   constructor() {
+    library.add(faAngleLeft, faAngleRight);
+
     effect(
       () => {
         this.$totalPage.set(Math.ceil(this.$totalItem() / this.$parPage()));
@@ -110,9 +99,10 @@ export class PaginationComponent {
       this._renderer.setAttribute(li, 'class', currentClass);
 
       const faIconComponentRef = this.btns.createComponent(FaIconComponent);
-      faIconComponentRef.instance.icon = this.faAngleLeft;
 
-      this._cdr.detectChanges();
+      faIconComponentRef.setInput('icon', this.faAngleLeft);
+
+      faIconComponentRef.changeDetectorRef.detectChanges();
 
       this._renderer.appendChild(li, faIconComponentRef.location.nativeElement);
 
@@ -159,9 +149,10 @@ export class PaginationComponent {
       this._renderer.setAttribute(li, 'class', currentClass);
 
       const faIconComponentRef = this.btns.createComponent(FaIconComponent);
-      faIconComponentRef.instance.icon = this.faAngleRight;
 
-      this._cdr.detectChanges();
+      faIconComponentRef.setInput('icon', this.faAngleRight);
+
+      faIconComponentRef.changeDetectorRef.detectChanges();
 
       this._renderer.appendChild(li, faIconComponentRef.location.nativeElement);
 
