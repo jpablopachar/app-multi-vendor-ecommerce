@@ -2,19 +2,23 @@ import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
   Component,
+  ComponentRef,
   EventEmitter,
+  InputSignal,
   Output,
   Renderer2,
   ViewChild,
   ViewContainerRef,
+  WritableSignal,
   effect,
   inject,
   input,
-  signal
+  signal,
 } from '@angular/core'
 import {
   FaIconComponent,
   FontAwesomeModule,
+  IconDefinition,
 } from '@fortawesome/angular-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
@@ -30,21 +34,21 @@ export class PaginationComponent {
   @ViewChild('btns', { static: true, read: ViewContainerRef })
   btns!: ViewContainerRef;
 
-  $pageNumber = input.required<number>();
-  $totalItem = input.required<number>();
-  $parPage = input.required<number>();
-  $showItem = input.required<number>();
+  $pageNumber: InputSignal<number> = input.required<number>();
+  $totalItem: InputSignal<number> = input.required<number>();
+  $parPage: InputSignal<number> = input.required<number>();
+  $showItem: InputSignal<number> = input.required<number>();
 
-  @Output() setPageNumber = new EventEmitter<number>();
+  @Output() setPageNumber: EventEmitter<number> = new EventEmitter<number>();
 
-  private _renderer = inject(Renderer2);
+  private _renderer: Renderer2 = inject(Renderer2);
 
-  public $totalPage = signal(0);
-  public $startPage = signal(0);
-  public $endPage = signal(0);
+  public $totalPage: WritableSignal<number> = signal(0);
+  public $startPage: WritableSignal<number> = signal(0);
+  public $endPage: WritableSignal<number> = signal(0);
 
-  public faAngleRight = faAngleRight;
-  public faAngleLeft = faAngleLeft;
+  public faAngleRight: IconDefinition = faAngleRight;
+  public faAngleLeft: IconDefinition = faAngleLeft;
 
   constructor() {
     library.add(faAngleLeft, faAngleRight);
@@ -54,7 +58,7 @@ export class PaginationComponent {
         this.$totalPage.set(Math.ceil(this.$totalItem() / this.$parPage()));
         this.$startPage.set(this.$pageNumber());
 
-        const dif = this.$totalPage() - this.$pageNumber();
+        const dif: number = this.$totalPage() - this.$pageNumber();
 
         if (dif <= this.$showItem())
           this.$startPage.set(this.$totalPage() - this.$showItem());
@@ -67,13 +71,13 @@ export class PaginationComponent {
 
         if (this.$startPage() <= 0) this.$startPage.set(1);
 
-        this._createBtn();
+        this._generateBtns();
       },
       { allowSignalWrites: true }
     );
   }
 
-  private _createBtn(): void {
+  private _generateBtns(): void {
     this._clearItems();
 
     if (this.$pageNumber() > 1) this._backButton();
@@ -89,78 +93,67 @@ export class PaginationComponent {
     ul.innerHTML = '';
   }
 
-  private _backButton(): void {
-    requestAnimationFrame(() => {
-      const li = this._renderer.createElement('li');
+  private _createButton(
+    icon: IconDefinition | null,
+    value: number | null,
+    onClick: () => void,
+    customClasses: string
+  ): void {
+    const li = this._renderer.createElement('li');
+    const defaultClasses =
+      'w-[33px] h-[33px] rounded-full flex justify-center items-center cursor-pointer';
 
-      const currentClass =
-        'w-[33px] h-[33px] rounded-full flex justify-center items-center bg-slate-300 text-[#000000] cursor-pointer';
+    this._renderer.setAttribute(
+      li,
+      'class',
+      `${customClasses} ${defaultClasses}`
+    );
 
-      this._renderer.setAttribute(li, 'class', currentClass);
+    if (icon) {
+      const faIconComponentRef: ComponentRef<FaIconComponent> =
+        this.btns.createComponent(FaIconComponent);
 
-      const faIconComponentRef = this.btns.createComponent(FaIconComponent);
-
-      faIconComponentRef.setInput('icon', this.faAngleLeft);
+      faIconComponentRef.setInput('icon', icon);
 
       faIconComponentRef.changeDetectorRef.detectChanges();
 
       this._renderer.appendChild(li, faIconComponentRef.location.nativeElement);
+    } else {
+      const text = this._renderer.createText(`${value}`);
 
-      this._renderer.listen(li, 'click', (): void => {
-        this.setPageNumber.emit(this.$pageNumber() - 1);
-      });
+      this._renderer.appendChild(li, text);
+    }
 
-      this._renderer.appendChild(this.btns.element.nativeElement, li);
-    });
+    this._renderer.listen(li, 'click', onClick);
+    this._renderer.appendChild(this.btns.element.nativeElement, li);
+  }
+
+  private _backButton(): void {
+    this._createButton(
+      this.faAngleLeft,
+      null,
+      (): void => this.setPageNumber.emit(this.$pageNumber() - 1),
+      'bg-slate-300 text-[#000000]'
+    );
   }
 
   private _insertDynamicItems(): void {
-    requestAnimationFrame(() => {
-      for (let i: number = this.$startPage(); i < this.$endPage(); i++) {
-        const li = this._renderer.createElement('li');
+    for (let i: number = this.$startPage(); i < this.$endPage(); i++) {
+      const isCurrentPage = this.$pageNumber() === i;
+      const classes = isCurrentPage
+        ? 'bg-indigo-300 shadow-lg shadow-indigo-300/50 text-white'
+        : 'bg-slate-600 hover:bg-indigo-400 shadow-lg hover:shadow-indigo-500/50 hover:text-white text-[#d0d2d6]';
 
-        const classes =
-          this.$pageNumber() === i
-            ? 'w-[33px] h-[33px] rounded-full flex justify-center items-center cursor-pointer bg-indigo-300 shadow-lg shadow-indigo-300/50 text-white'
-            : 'w-[33px] h-[33px] rounded-full flex justify-center items-center cursor-pointer bg-slate-600 hover:bg-indigo-400 shadow-lg hover:shadow-indigo-500/50 hover:text-white text-[#d0d2d6]';
-
-        this._renderer.setAttribute(li, 'class', classes);
-
-        const text = this._renderer.createText(`${i}`);
-
-        this._renderer.appendChild(li, text);
-
-        this._renderer.listen(li, 'click', (): void =>
-          this.setPageNumber.emit(i)
-        );
-
-        this._renderer.appendChild(this.btns.element.nativeElement, li);
-      }
-    });
+      this._createButton(null, i, () => this.setPageNumber.emit(i), classes);
+    }
   }
 
   private _nextButton(): void {
-    requestAnimationFrame(() => {
-      const li = this._renderer.createElement('li');
-
-      const currentClass =
-        'w-[33px] h-[33px] rounded-full flex justify-center items-center bg-slate-300 text-[#000000] cursor-pointer';
-
-      this._renderer.setAttribute(li, 'class', currentClass);
-
-      const faIconComponentRef = this.btns.createComponent(FaIconComponent);
-
-      faIconComponentRef.setInput('icon', this.faAngleRight);
-
-      faIconComponentRef.changeDetectorRef.detectChanges();
-
-      this._renderer.appendChild(li, faIconComponentRef.location.nativeElement);
-
-      this._renderer.listen(li, 'click', (): void => {
-        this.setPageNumber.emit(this.$pageNumber() + 1);
-      });
-
-      this._renderer.appendChild(this.btns.element.nativeElement, li);
-    });
+    this._createButton(
+      this.faAngleRight,
+      null,
+      () => this.setPageNumber.emit(this.$pageNumber() + 1),
+      'bg-slate-300 text-[#000000]'
+    );
   }
 }
