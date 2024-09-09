@@ -18,7 +18,7 @@ export interface Product {
 
 export interface ProductListResponse {
   products: Product[];
-  total: number;
+  totalProducts: number;
 }
 
 export interface ProductPayload {
