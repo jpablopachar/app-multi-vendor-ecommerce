@@ -1,6 +1,6 @@
 export interface CategoryRequest {
   name: string;
-  image: string;
+  image: File;
 }
 
 export interface CategoryPayload {

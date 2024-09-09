@@ -6,16 +6,17 @@ import {
   inject,
   Signal,
   signal,
+  WritableSignal,
 } from '@angular/core'
 import {
   FormControl,
   FormGroup,
   NonNullableFormBuilder,
   ReactiveFormsModule,
-  Validators
+  Validators,
 } from '@angular/forms'
 import { SearchComponent } from '@app/components/search.component'
-import { Category, CategoryRequestForm } from '@app/models'
+import { Category, CategoryRequest, CategoryRequestForm } from '@app/models'
 import {
   categoryActions,
   selectCategories,
@@ -23,9 +24,13 @@ import {
   selectLoader,
   selectSuccessMessage,
 } from '@app/store/category'
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
+import {
+  FontAwesomeModule,
+  IconDefinition,
+} from '@fortawesome/angular-fontawesome'
 import {
   faCircleXmark,
+  faImage,
   faPenToSquare,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons'
@@ -53,25 +58,28 @@ export class CategoryComponent {
   );
   private readonly _toastr: ToastrService = inject(ToastrService);
 
-  public $currentPage = signal(1);
-  public $searchValue = signal('');
-  public $parPage = signal(5);
-  public $show = signal(false);
+  public $currentPage: WritableSignal<number> = signal(1);
+  public $searchValue: WritableSignal<string> = signal('');
+  public $parPage: WritableSignal<number> = signal(5);
+  public $show: WritableSignal<boolean> = signal(false);
+  public $imageShow = signal('');
 
-  public fanPenToSquare = faPenToSquare;
-  public faTrash = faTrash;
-  public faCircleXmark = faCircleXmark;
-  public imageShow = '';
-  public state = { name: '', image: '' };
+  public fanPenToSquare: IconDefinition = faPenToSquare;
+  public faTrash: IconDefinition = faTrash;
+  public faCircleXmark: IconDefinition = faCircleXmark;
+  public faImage: IconDefinition = faImage;
 
   public categoryForm: FormGroup<CategoryRequestForm>;
 
   public $loader: Signal<boolean> = this._store.selectSignal(selectLoader);
 
-  public $categories: Signal<Category[]> = this._store.selectSignal(selectCategories);
+  public $categories: Signal<Category[]> =
+    this._store.selectSignal(selectCategories);
 
-  public $errorMessage: Signal<string> = this._store.selectSignal(selectErrorMessage);
-  public $successMessage: Signal<string> = this._store.selectSignal(selectSuccessMessage);
+  public $errorMessage: Signal<string> =
+    this._store.selectSignal(selectErrorMessage);
+  public $successMessage: Signal<string> =
+    this._store.selectSignal(selectSuccessMessage);
 
   constructor() {
     this.categoryForm = this._formBuilder.group({
@@ -79,7 +87,7 @@ export class CategoryComponent {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      image: new FormControl<string>('', {
+      image: new FormControl<File | null>(null, {
         nonNullable: true,
         validators: [Validators.required],
       }),
@@ -98,24 +106,46 @@ export class CategoryComponent {
       { allowSignalWrites: true }
     );
 
-    effect((): void => {
-      if (this.$successMessage().length > 0) {
-        console.log(`El valor de successMessage es: ${this.$successMessage()}`);
-      }
+    effect(
+      (): void => {
+        if (this.$successMessage().length > 0) {
+          this._toastr.success(this.$successMessage());
 
-      if (this.$errorMessage().length > 0) {
-        console.log(`El valor de errorMessage es: ${this.$errorMessage()}`);
-      }
-    });
+          this._store.dispatch(categoryActions.messageClear());
+
+          this.categoryForm.reset();
+
+          this.$imageShow.set('');
+        }
+
+        if (this.$errorMessage().length > 0) {
+          this._toastr.error(this.$errorMessage());
+
+          this._store.dispatch(categoryActions.messageClear());
+        }
+      },
+      { allowSignalWrites: true }
+    );
+  }
+
+  public imageHandle(event: Event): void {
+    const files: FileList | null = (event.target as HTMLInputElement).files;
+
+    if (files && files?.length > 0) {
+      this.$imageShow.set(URL.createObjectURL(files[0]));
+
+      this.categoryForm.controls['image'].setValue(files[0]);
+    }
   }
 
   public submit(): void {
     if (this.categoryForm.valid) {
-      this._store.dispatch(
-        categoryActions.categoryAdd({
-          request: this.categoryForm.getRawValue(),
-        })
-      );
+      const request: CategoryRequest = {
+        name: this.categoryForm.controls['name'].value,
+        image: this.categoryForm.controls['image'].value as File,
+      };
+
+      this._store.dispatch(categoryActions.categoryAdd({ request }));
     }
   }
 }

@@ -17,6 +17,7 @@ const categoryFeature = createFeature({
     on(categoryActions.messageClear, (state: CategoryState) => ({
       ...state,
       errorMessage: '',
+      successMessage: '',
     })),
     on(categoryActions.categoryAdd, (state: CategoryState) => ({
       ...state,
