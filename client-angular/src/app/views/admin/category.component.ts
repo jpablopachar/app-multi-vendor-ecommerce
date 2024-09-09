@@ -58,6 +58,16 @@ export class CategoryComponent {
   );
   private readonly _toastr: ToastrService = inject(ToastrService);
 
+  public $loader: Signal<boolean> = this._store.selectSignal(selectLoader);
+
+  public $categories: Signal<Category[]> =
+    this._store.selectSignal(selectCategories);
+
+  public $errorMessage: Signal<string> =
+    this._store.selectSignal(selectErrorMessage);
+  public $successMessage: Signal<string> =
+    this._store.selectSignal(selectSuccessMessage);
+
   public $currentPage: WritableSignal<number> = signal(1);
   public $searchValue: WritableSignal<string> = signal('');
   public $parPage: WritableSignal<number> = signal(5);
@@ -70,16 +80,6 @@ export class CategoryComponent {
   public faImage: IconDefinition = faImage;
 
   public categoryForm: FormGroup<CategoryRequestForm>;
-
-  public $loader: Signal<boolean> = this._store.selectSignal(selectLoader);
-
-  public $categories: Signal<Category[]> =
-    this._store.selectSignal(selectCategories);
-
-  public $errorMessage: Signal<string> =
-    this._store.selectSignal(selectErrorMessage);
-  public $successMessage: Signal<string> =
-    this._store.selectSignal(selectSuccessMessage);
 
   constructor() {
     this.categoryForm = this._formBuilder.group({

@@ -1,0 +1,98 @@
+<div class="px-2 lg:px-7 pt-5">
+    <h1 class="text-[#000000] font-semibold text-lg mb-3">All products</h1>
+    <div class="w-full p-4 bg-[#6a5fdf] rounded-md">
+        <app-search
+            [searchValue]="$searchValue()"
+            (setSearchValue)="$searchValue.set($event)"
+            (setParPage)="$parPage.set($event)"
+        ></app-search>
+        <div class="relative overflow-x-auto mt-5">
+            <table class="w-full text-sm text-left text-[#d0d2d6]">
+                <thead
+                    class="text-sm text-[#d0d2d6] uppercase border-b border-slate-700"
+                >
+                    <tr>
+                        <th scope="col" class="py-3 px-4">No</th>
+                        <th scope="col" class="py-3 px-4">Image</th>
+                        <th scope="col" class="py-3 px-4">Name</th>
+                        <th scope="col" class="py-3 px-4">Category</th>
+                        <th scope="col" class="py-3 px-4">Brand</th>
+                        <th scope="col" class="py-3 px-4">Price</th>
+                        <th scope="col" class="py-3 px-4">Discount</th>
+                        <th scope="col" class="py-3 px-4">Stock</th>
+                        <th scope="col" class="py-3 px-4">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (product of $products(); track product._id; let idx =
+                    $index) {
+                    <tr>
+                        <td class="py-1 px-4 font-medium whitespace-nowrap">
+                            {{ idx + 1 }}
+                        </td>
+                        <td class="py-1 px-4 font-medium whitespace-nowrap">
+                            <img
+                                class="w-[45px] h-[45px]"
+                                [src]="product.images[0]"
+                                alt=""
+                            />
+                        </td>
+                        <td class="py-1 px-4 font-medium whitespace-nowrap">
+                            {{ product.name.slice(0, 15) }}...
+                        </td>
+                        <td class="py-1 px-4 font-medium whitespace-nowrap">
+                            {{ product.category }}
+                        </td>
+                        <td class="py-1 px-4 font-medium whitespace-nowrap">
+                            {{ product.brand }}
+                        </td>
+                        <td class="py-1 px-4 font-medium whitespace-nowrap">
+                            {{ product.price | currency }}
+                        </td>
+                        <td class="py-1 px-4 font-medium whitespace-nowrap">
+                            @if (product.discount === 0) {
+                            <span>No Discount</span>
+                            } @else {
+                            <span>%{{ product.discount }}</span>
+                            }
+                        </td>
+                        <td class="py-1 px-4 font-medium whitespace-nowrap">
+                            {{ product.stock }}
+                        </td>
+                        <td class="py-1 px-4 font-medium whitespace-nowrap">
+                            <div class="flex justify-start items-center gap-4">
+                                <a
+                                    class="p-[6px] bg-yellow-500 rounded hover:shadow-lg hover:shadow-yellow-500/50"
+                                >
+                                    <fa-icon [icon]="fanPenToSquare"></fa-icon>
+                                </a>
+                                <a
+                                    class="p-[6px] bg-green-500 rounded hover:shadow-lg hover:shadow-green-500/50"
+                                >
+                                    <fa-icon [icon]="faEye"></fa-icon>
+                                </a>
+                                <a
+                                    class="p-[6px] bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50"
+                                >
+                                    <fa-icon [icon]="faTrash"></fa-icon>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @if ($totalProducts() <= $parPage()) { '' } @else {
+        <div class="w-full flex justify-end mt-4 bottom-4 right-4">
+            <app-pagination
+                [$pageNumber]="$currentPage()"
+                [$totalItem]="50"
+                [$parPage]="$parPage()"
+                [$showItem]="3"
+                (setPageNumber)="$currentPage.set($event)"
+            ></app-pagination>
+        </div>
+        }
+    </div>
+</div>

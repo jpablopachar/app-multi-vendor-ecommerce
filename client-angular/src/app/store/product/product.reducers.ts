@@ -52,4 +52,6 @@ export const {
   selectSuccessMessage,
   selectErrorMessage,
   selectProducts,
+  selectTotalProducts,
+  selectProduct,
 } = productFeature;
