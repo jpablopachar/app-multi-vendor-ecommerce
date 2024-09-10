@@ -10,6 +10,7 @@ import { PORT } from './config.js'
 import { authRouter } from './routes/auth/authRoutes.js'
 import { categoryRouter } from './routes/dashboard/categoryRoutes.js'
 import { productRouter } from './routes/dashboard/productRoutes.js'
+import { sellerRouter } from './routes/dashboard/sellerRoutes.js'
 import { dbConnect } from './utils/db.js'
 
 // import { swaggerDocs } from './routes/swagger.js'
@@ -30,6 +31,7 @@ app.use(cors(corsOptions))
 app.use('/api/auth', authRouter)
 app.use('/api', categoryRouter)
 app.use('/api', productRouter)
+app.use('/api', sellerRouter)
 
 dbConnect().then(() => {
   app.listen(PORT, () => {
