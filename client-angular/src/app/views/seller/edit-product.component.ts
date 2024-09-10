@@ -6,7 +6,7 @@ import {
   inject,
   signal,
   Signal,
-  WritableSignal
+  WritableSignal,
 } from '@angular/core'
 import {
   FormControl,
@@ -16,17 +16,13 @@ import {
   Validators,
 } from '@angular/forms'
 import { ActivatedRoute, RouterLink } from '@angular/router'
-import {
-  Product,
-  ProductRequestForm,
-  ProductUpdateRequest
-} from '@app/models'
+import { Product, ProductRequestForm, ProductUpdateRequest } from '@app/models'
 import {
   productActions,
   selectErrorMessage,
   selectLoader,
   selectProduct,
-  selectSuccessMessage
+  selectSuccessMessage,
 } from '@app/store/product'
 import {
   FontAwesomeModule,
@@ -53,9 +49,6 @@ export class EditProductComponent {
 
   public $loader: Signal<boolean> = this._store.selectSignal(selectLoader);
 
-  /* public $categories: Signal<Category[]> =
-    this._store.selectSignal(selectCategories); */
-
   public $errorMessage: Signal<string> =
     this._store.selectSignal(selectErrorMessage);
   public $successMessage: Signal<string> =
@@ -65,10 +58,8 @@ export class EditProductComponent {
     this._store.selectSignal(selectProduct);
 
   public $searchValue: WritableSignal<string> = signal('');
-  // public $cateShow: WritableSignal<boolean> = signal(false);
   public $imageShow: WritableSignal<{ url: string }[]> = signal([]);
   public $images: WritableSignal<File[]> = signal([]);
-  // public $allCategory: WritableSignal<Category[]> = signal([]);
 
   private $_productId: WritableSignal<string> = signal(
     this._route.snapshot.params['productId']
@@ -132,19 +123,12 @@ export class EditProductComponent {
       { allowSignalWrites: true }
     );
 
-    /* effect(
-      (): void => {
-        if (this.$categories().length > 0) {
-          this.$allCategory.set(this.$categories());
-        }
-      },
-      { allowSignalWrites: true }
-    ); */
-
     effect(
       (): void => {
         if (this.$_productId()) {
-          this._store.dispatch(productActions.getProduct({ productId: this.$_productId() }));
+          this._store.dispatch(
+            productActions.getProduct({ productId: this.$_productId() })
+          );
         }
       },
       { allowSignalWrites: true }
@@ -153,7 +137,16 @@ export class EditProductComponent {
     effect(
       (): void => {
         if (this.$_product()) {
-          const { name, brand, category, stock, price, discount, description, images } = this.$_product() as Product;
+          const {
+            name,
+            brand,
+            category,
+            stock,
+            price,
+            discount,
+            description,
+            images,
+          } = this.$_product() as Product;
 
           this.productForm.patchValue({
             name,
@@ -165,7 +158,9 @@ export class EditProductComponent {
             description,
           });
 
-          const imagesTemp = images.map((image: string): { url: string } => ({ url: image }));
+          const imagesTemp = images.map((image: string): { url: string } => ({
+            url: image,
+          }));
 
           this.$imageShow.set(imagesTemp);
         }
@@ -173,23 +168,6 @@ export class EditProductComponent {
       { allowSignalWrites: true }
     );
   }
-
-  /* public categorySearch(event: Event): void {
-    const value: string = (event.target as HTMLInputElement).value;
-
-    this.$searchValue.set(value);
-
-    if (value) {
-      const srcValue = this.$allCategory().filter(
-        (category) =>
-          category.name.toLowerCase().indexOf(value.toLowerCase()) > -1
-      );
-
-      this.$allCategory.set(srcValue);
-    } else {
-      this.$allCategory.set(this.$categories());
-    }
-  } */
 
   public imageHandle(event: Event): void {
     const files: FileList | null = (event.target as HTMLInputElement).files;
@@ -209,22 +187,6 @@ export class EditProductComponent {
         ...prev,
         ...imageUrl,
       ]);
-    }
-  }
-
-  public changeImage(url: string, event: Event): void {
-    const files: FileList | null = (event.target as HTMLInputElement).files;
-
-    if (files && files.length > 0) {
-      /* const file = files[0];
-      const tempUrl: { url: string }[] = this.$imageShow();
-      const tempImages: File[] = this.$images();
-
-      tempImages[index] = file;
-      tempUrl[index] = { url: URL.createObjectURL(file) };
-
-      this.$imageShow.set([...tempUrl]);
-      this.$images.set([...tempImages]); */
     }
   }
 
