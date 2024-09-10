@@ -4,7 +4,9 @@ import {
   Component,
   effect,
   inject,
+  signal,
   Signal,
+  WritableSignal,
 } from '@angular/core'
 import {
   FormControl,
@@ -21,7 +23,11 @@ import {
   selectSuccessMessage,
   selectUserInfo,
 } from '@app/store/auth'
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
+import {
+  FontAwesomeModule,
+  IconDefinition,
+} from '@fortawesome/angular-fontawesome'
+import { faImage, faPenToSquare } from '@fortawesome/free-solid-svg-icons'
 import { Store } from '@ngrx/store'
 import { ToastrService } from 'ngx-toastr'
 
@@ -44,10 +50,16 @@ export class ProfileComponent {
   public $successMessage: Signal<string> =
     this._store.selectSignal(selectSuccessMessage);
 
-  public $userInfo: Signal<string | InfoUser> =
-    this._store.selectSignal(selectUserInfo);
+  public $userInfo: Signal<InfoUser> = this._store.selectSignal(
+    selectUserInfo
+  ) as Signal<InfoUser>;
+
+  public $status: WritableSignal<string> = signal('active');
 
   public shopInfoForm: FormGroup<ShopInfoRequestForm>;
+
+  public faImage: IconDefinition = faImage;
+  public faPenToSquare: IconDefinition = faPenToSquare;
 
   constructor() {
     this.shopInfoForm = this._formBuilder.group({
@@ -81,5 +93,26 @@ export class ProfileComponent {
       },
       { allowSignalWrites: true }
     );
+  }
+
+  public addImage(event: Event): void {
+    const file: File | undefined = (event.target as HTMLInputElement)
+      .files?.[0];
+
+    if (file) {
+      const request: FormData = new FormData();
+
+      request.append('image', file);
+
+      this._store.dispatch(authActions.profileImageUpload({ request }));
+    }
+  }
+
+  public submit(): void {
+    if (this.shopInfoForm.valid) {
+      this._store.dispatch(
+        authActions.profileInfoAdd({ request: this.shopInfoForm.getRawValue() })
+      );
+    }
   }
 }
