@@ -38,3 +38,18 @@ export interface ProductRequest {
   category: string;
   images: File[];
 }
+
+export interface ProductUpdateRequest {
+  name: string;
+  description: string;
+  discount: number;
+  price: number;
+  brand: string;
+  stock: number;
+  productId: string;
+}
+
+export interface ProductUpdateResponse {
+  product: Product;
+  message: string;
+}

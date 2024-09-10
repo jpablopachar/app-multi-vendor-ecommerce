@@ -41,7 +41,29 @@ const productFeature = createFeature({
       ...state,
       products: action.response.products,
       totalProducts: action.response.totalProducts,
-    }))
+    })),
+    on(productActions.getProduct, (state: ProductState) => ({
+      ...state,
+    })),
+    on(productActions.getProductSuccess, (state: ProductState, action) => ({
+      ...state,
+      product: action.response.product,
+    })),
+    on(productActions.editProduct, (state: ProductState) => ({
+      ...state,
+      loader: true,
+    })),
+    on(productActions.editProductSuccess, (state: ProductState, action) => ({
+      ...state,
+      loader: false,
+      product: action.response.product,
+      successMessage: action.response.message,
+    })),
+    on(productActions.editProductError, (state: ProductState, action) => ({
+      ...state,
+      loader: false,
+      errorMessage: action.error,
+    })),
   ),
 });
 

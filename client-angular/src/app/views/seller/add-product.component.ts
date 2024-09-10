@@ -164,7 +164,6 @@ export class AddProductComponent implements OnInit {
     if (files && files?.length > 0) {
       const filesArray: File[] = Array.from(files);
 
-      // this.$images.set([...this.$images(), ...filesArray]);
       this.$images.update((prev: File[]): File[] => [...prev, ...filesArray]);
 
       const imageUrl: { url: string }[] = [];
