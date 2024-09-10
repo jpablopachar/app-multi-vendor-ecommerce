@@ -21,7 +21,7 @@ export const SellerRoutes: Routes = [
     data: { role: 'seller', status: 'active' },
   },
   {
-    path: 'dashboard/edit-product/productId',
+    path: 'dashboard/edit-product/:productId',
     loadComponent: () =>
       import('../views/seller/edit-product.component').then(
         (c) => c.EditProductComponent

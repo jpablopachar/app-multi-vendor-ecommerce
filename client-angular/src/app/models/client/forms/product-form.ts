@@ -8,5 +8,4 @@ export interface ProductRequestForm {
   price: FormControl<string>;
   discount: FormControl<string>;
   description: FormControl<string>;
-  image: FormControl<File | null>;
 }

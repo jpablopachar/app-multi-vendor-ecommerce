@@ -8,6 +8,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core'
+import { RouterLink } from '@angular/router'
 import { SearchComponent } from '@app/components/search.component'
 import { Product } from '@app/models'
 import {
@@ -35,6 +36,7 @@ import { PaginationComponent } from '../pagination.component'
   imports: [
     CommonModule,
     FontAwesomeModule,
+    RouterLink,
     SearchComponent,
     PaginationComponent,
   ],

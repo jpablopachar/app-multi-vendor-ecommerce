@@ -2,8 +2,7 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import {
   ProductListResponse,
-  ProductPayload,
-  ProductRequest,
+  ProductPayload
 } from '@app/models'
 import { environment } from '@src/environments/environment'
 import { Observable } from 'rxjs'
@@ -16,9 +15,9 @@ export class ProductService {
 
   private _url: string = environment.url;
 
-  public addProduct(body: ProductRequest): Observable<{ message: string }> {
+  public addProduct(body: FormData): Observable<{ message: string }> {
     return this._http.post<{ message: string }>(
-      `${this._url}/product/addProduct`,
+      `${this._url}/product-add`,
       body
     );
   }

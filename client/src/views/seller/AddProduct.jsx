@@ -346,7 +346,7 @@ const AddProduct = () => {
                 {loader ? (
                   <PropagateLoader color="#fff" cssOverride={overrideStyle} />
                 ) : (
-                  'Add Category'
+                  'Add Product'
                 )}
               </button>
             </div>

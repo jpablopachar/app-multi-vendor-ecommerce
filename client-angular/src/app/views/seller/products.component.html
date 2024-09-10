@@ -63,6 +63,10 @@
                             <div class="flex justify-start items-center gap-4">
                                 <a
                                     class="p-[6px] bg-yellow-500 rounded hover:shadow-lg hover:shadow-yellow-500/50"
+                                    [routerLink]="[
+                                        '/seller/dashboard/edit-product',
+                                        product._id
+                                    ]"
                                 >
                                     <fa-icon [icon]="fanPenToSquare"></fa-icon>
                                 </a>
