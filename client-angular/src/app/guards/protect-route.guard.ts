@@ -1,11 +1,11 @@
 import { inject, Signal } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import {
-  ActivatedRouteSnapshot,
-  Router,
-  type CanActivateFn,
+    ActivatedRouteSnapshot,
+    Router,
+    type CanActivateFn,
 } from '@angular/router'
-import { GetUser } from '@app/models'
+import { InfoUser } from '@app/models'
 import { selectRole, selectUserInfo } from '@app/store/auth'
 import { Store } from '@ngrx/store'
 
@@ -16,7 +16,7 @@ export const protectRouteGuard: CanActivateFn = (
   const router = inject(Router);
 
   const $role: Signal<string | undefined> = toSignal(store.select(selectRole));
-  const $userInfo: Signal<string | GetUser | undefined> = toSignal(
+  const $userInfo: Signal<string | InfoUser | undefined> = toSignal(
     store.select(selectUserInfo)
   );
 
@@ -26,10 +26,10 @@ export const protectRouteGuard: CanActivateFn = (
 
   if (role) {
     if ($userInfo()) {
-      if (($userInfo() as GetUser).role === role) {
+      if (($userInfo() as InfoUser).role === role) {
         if (status) {
-          if (status !== ($userInfo() as GetUser).status) {
-            if (($userInfo() as GetUser).status === 'pending') {
+          if (status !== ($userInfo() as InfoUser).status) {
+            if (($userInfo() as InfoUser).status === 'pending') {
               return router.navigate(['/seller/account-pending']);
             } else {
               return router.navigate(['/seller/account-deactive']);
@@ -39,7 +39,7 @@ export const protectRouteGuard: CanActivateFn = (
           if (visibility) {
             if (
               !(visibility as string[]).some(
-                (r: string): boolean => r === ($userInfo() as GetUser).status
+                (r: string): boolean => r === ($userInfo() as InfoUser).status
               )
             ) {
               return router.navigate(['/seller/account-pending']);

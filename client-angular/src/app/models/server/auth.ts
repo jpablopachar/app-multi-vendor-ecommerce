@@ -12,7 +12,7 @@ export interface AuthResponse {
   message: string;
 }
 
-export interface GetUser {
+export interface InfoUser {
   _id: string;
   name: string;
   email: string;
@@ -23,14 +23,17 @@ export interface GetUser {
   image: string;
   createdAt: string;
   updatedAt: string;
-  shopInfo: {
-    division: string;
-    district: string;
-    shopName: string;
-    sub_district: string;
-  }
+  shopInfo?: ShopInfo;
 }
 
-export interface GetUserResponse {
-  userInfo: GetUser;
+export interface ShopInfo {
+  division: string;
+  district: string;
+  shopName: string;
+  sub_district: string;
+}
+
+export interface UserInfoResponse {
+  userInfo: InfoUser;
+  message?: string;
 }

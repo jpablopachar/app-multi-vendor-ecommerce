@@ -1,4 +1,4 @@
-import { AuthResponse, GetUserResponse, LoginUser, RegisterUser } from '@app/models'
+import { AuthResponse, LoginUser, RegisterUser, ShopInfo, UserInfoResponse } from '@app/models'
 import { createActionGroup, emptyProps, props } from '@ngrx/store'
 
 export const authActions = createActionGroup({
@@ -15,6 +15,10 @@ export const authActions = createActionGroup({
     SellerRegisterSuccess: props<{ response: AuthResponse }>(),
     SellerRegisterError: props<{ error: string }>(),
     GetUserInfo: emptyProps(),
-    GetUserInfoSuccess: props<{ response: GetUserResponse }>(),
+    GetUserInfoSuccess: props<{ response: UserInfoResponse }>(),
+    ProfileImageUpload: props<{ request: FormData }>(),
+    ProfileImageUploadSuccess: props<{ response: UserInfoResponse }>(),
+    ProfileInfoAdd: props<{ request: ShopInfo }>(),
+    ProfileInfoAddSuccess: props<{ response: UserInfoResponse }>(),
   }
 })

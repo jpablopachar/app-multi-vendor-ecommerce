@@ -1,10 +1,10 @@
-import { GetUser } from "@app/models"
+import { InfoUser } from "@app/models";
 
 export interface AuthState {
   successMessage: string;
   errorMessage: string;
   loader: boolean;
-  userInfo: string | GetUser;
+  userInfo: string | InfoUser;
   role: string;
   token: string | null;
 }

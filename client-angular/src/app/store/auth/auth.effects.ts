@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http'
 import { inject } from '@angular/core'
-import { AuthResponse, GetUserResponse } from '@app/models'
+import { AuthResponse, UserInfoResponse } from '@app/models'
 import { AuthService } from '@app/services'
 import { Actions, createEffect, ofType } from '@ngrx/effects'
 import { catchError, map, of, switchMap } from 'rxjs'
@@ -97,8 +97,50 @@ export const getUserInfoEffect = createEffect(
         authService
           .getUserInfo()
           .pipe(
-            map((response: GetUserResponse) =>
+            map((response: UserInfoResponse) =>
               authActions.getUserInfoSuccess({ response })
+            )
+          )
+      )
+    );
+  },
+  { functional: true }
+);
+
+export const profileImageUploadEffect = createEffect(
+  (
+    actions$ = inject(Actions),
+    authService: AuthService = inject(AuthService)
+  ) => {
+    return actions$.pipe(
+      ofType(authActions.profileImageUpload),
+      switchMap(({ request }) =>
+        authService
+          .profileImageUpload(request)
+          .pipe(
+            map((response: UserInfoResponse) =>
+              authActions.profileImageUploadSuccess({ response })
+            )
+          )
+      )
+    );
+  },
+  { functional: true }
+);
+
+export const profileInfoAddEffect = createEffect(
+  (
+    actions$ = inject(Actions),
+    authService: AuthService = inject(AuthService)
+  ) => {
+    return actions$.pipe(
+      ofType(authActions.profileInfoAdd),
+      switchMap(({ request }) =>
+        authService
+          .profileInfoAdd(request)
+          .pipe(
+            map((response: UserInfoResponse) =>
+              authActions.profileInfoAddSuccess({ response })
             )
           )
       )

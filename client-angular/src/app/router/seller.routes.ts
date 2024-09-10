@@ -38,6 +38,15 @@ export const SellerRoutes: Routes = [
     canActivate: [protectRouteGuard],
     data: { role: 'seller', status: 'active' },
   },
+  {
+    path: 'dashboard/profile',
+    loadComponent: () =>
+      import('../views/seller/profile.component').then(
+        (c) => c.ProfileComponent
+      ),
+    canActivate: [protectRouteGuard],
+    data: { role: 'seller', visibility: ['active', 'deactive', 'pending'] },
+  },
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-  { path: '**', redirectTo: 'not-found', pathMatch: 'full', },
+  { path: '**', redirectTo: 'not-found', pathMatch: 'full' },
 ];

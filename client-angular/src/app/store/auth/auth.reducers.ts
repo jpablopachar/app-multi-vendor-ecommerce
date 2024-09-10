@@ -75,7 +75,27 @@ const authFeature = createFeature({
       ...state,
       loader: false,
       userInfo: action.response.userInfo,
-    }))
+    })),
+    on(authActions.profileImageUpload, (state: AuthState) => ({
+      ...state,
+      loader: true,
+    })),
+    on(authActions.profileImageUploadSuccess, (state: AuthState, action) => ({
+      ...state,
+      loader: false,
+      userInfo: action.response.userInfo,
+      successMessage: action.response.message as string,
+    })),
+    on(authActions.profileInfoAdd, (state: AuthState) => ({
+      ...state,
+      loader: true,
+    })),
+    on(authActions.profileInfoAddSuccess, (state: AuthState, action) => ({
+      ...state,
+      loader: false,
+      userInfo: action.response.userInfo,
+      successMessage: action.response.message as string,
+    })),
   ),
 });
 

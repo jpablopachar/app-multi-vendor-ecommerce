@@ -2,9 +2,10 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import {
   AuthResponse,
-  GetUserResponse,
   LoginUser,
   RegisterUser,
+  ShopInfo,
+  UserInfoResponse,
 } from '@app/models'
 import { environment } from '@src/environments/environment'
 import { Observable } from 'rxjs'
@@ -39,7 +40,21 @@ export class AuthService {
     );
   }
 
-  public getUserInfo(): Observable<GetUserResponse> {
-    return this._http.get<GetUserResponse>(`${this._url}/auth/get-user`);
+  public getUserInfo(): Observable<UserInfoResponse> {
+    return this._http.get<UserInfoResponse>(`${this._url}/auth/get-user`);
+  }
+
+  public profileInfoAdd(body: ShopInfo): Observable<UserInfoResponse> {
+    return this._http.post<UserInfoResponse>(
+      `${this._url}/auth/profile-info-add`,
+      body
+    );
+  }
+
+  public profileImageUpload(body: FormData): Observable<UserInfoResponse> {
+    return this._http.post<UserInfoResponse>(
+      `${this._url}/auth/profile-image-upload`,
+      body
+    );
   }
 }
