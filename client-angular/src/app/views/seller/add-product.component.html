@@ -9,7 +9,146 @@
             >
         </div>
         <div>
-            <form action=""></form>
+            <form [formGroup]="productForm" (ngSubmit)="submit()">
+                <div
+                    class="flex flex-col mb-3 md:flex-row gap-4 w-full text-[#d0d2d6]"
+                >
+                    <div class="flex flex-col w-full gap-1">
+                        <label for="name">Product Name</label>
+                        <input
+                            class="px-4 py-2 focus:border-indigo-500 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]"
+                            type="text"
+                            name="name"
+                            id="name"
+                            placeholder="Product Name"
+                            formControlName="name"
+                            required
+                        />
+                    </div>
+                    <div class="flex flex-col w-full gap-1">
+                        <label for="brand">Product Brand</label>
+                        <input
+                            class="px-4 py-2 focus:border-indigo-500 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]"
+                            type="text"
+                            name="brand"
+                            id="brand"
+                            placeholder="Brand Name"
+                            formControlName="brand"
+                            required
+                        />
+                    </div>
+                </div>
+                <div
+                    class="flex flex-col mb-3 md:flex-row gap-4 w-full text-[#d0d2d6]"
+                >
+                    <div class="flex flex-col w-full gap-1 relative">
+                        <label for="category">Category</label>
+                        <input
+                            readOnly
+                            (click)="$cateShow.set(!$cateShow())"
+                            class="px-4 py-2 focus:border-indigo-500 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]"
+                            type="text"
+                            id="category"
+                            placeholder="--select category--"
+                            formControlName="category"
+                            required
+                        />
+                        <div
+                            class="absolute top-[101%] bg-[#475569] w-full transition-all"
+                            [ngClass]="$cateShow() ? 'scale-100' : 'scale-0'"
+                        >
+                            <div class="w-full px-4 py-2 fixed">
+                                <input
+                                    [value]="$searchValue()"
+                                    (change)="searchValue($event)"
+                                    class="px-3 py-1 w-full focus:border-indigo-500 outline-none bg-transparent border border-slate-700 rounded-md text-[#d0d2d6] overflow-hidden"
+                                    type="text"
+                                    placeholder="search"
+                                />
+                            </div>
+                            <div class="pt-14"></div>
+                            <div
+                                class="flex justify-start items-start flex-col h-[200px] overflow-x-scrool"
+                            >
+                                @for (currentCategory of $categories(); track
+                                currentCategory._id; let idx = $index) {
+                                <span
+                                    class="px-4 py-2 hover:bg-indigo-500 hover:text-white hover:shadow-lg w-full cursor-pointer"
+                                    [ngClass]="
+                                        productForm.controls['category']
+                                            .value === currentCategory.name
+                                            ? 'bg-indigo-500'
+                                            : ''
+                                    "
+                                    (click)="
+                                        $cateShow.set(false);
+                                        productForm.controls[
+                                            'category'
+                                        ].setValue(currentCategory.name);
+                                        $searchValue.set('')
+                                    "
+                                    >{{ currentCategory.name }}</span
+                                >
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col w-full gap-1">
+                        <label for="stock">Product Stock</label>
+                        <input
+                            class="px-4 py-2 focus:border-indigo-500 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]"
+                            type="text"
+                            name="stock"
+                            id="stock"
+                            placeholder="Stock"
+                            formControlName="stock"
+                            required
+                        />
+                    </div>
+                </div>
+                <div
+                    class="flex flex-col mb-3 md:flex-row gap-4 w-full text-[#d0d2d6]"
+                >
+                    <div class="flex flex-col w-full gap-1">
+                        <label for="price">Price</label>
+                        <input
+                            class="px-4 py-2 focus:border-indigo-500 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]"
+                            type="number"
+                            name="price"
+                            id="price"
+                            placeholder="price"
+                            formControlName="price"
+                            required
+                        />
+                    </div>
+                    <div class="flex flex-col w-full gap-1">
+                        <label for="discount">Discount</label>
+                        <input
+                            class="px-4 py-2 focus:border-indigo-500 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]"
+                            type="number"
+                            name="discount"
+                            id="discount"
+                            placeholder="discount by %"
+                            formControlName="discount"
+                            required
+                        />
+                    </div>
+                </div>
+                <div class="flex flex-col w-full gap-1 mb-5">
+                    <label for="description" class="text-[#d0d2d6]">
+                        Description
+                    </label>
+                    <textarea
+                        class="px-4 py-2 focus:border-indigo-500 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]"
+                        name="description"
+                        id="description"
+                        placeholder="Description"
+                        cols="10"
+                        rows="4"
+                        formControlName="description"
+                    ></textarea>
+                </div>
+            </form>
         </div>
     </div>
 </div>

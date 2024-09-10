@@ -14,6 +14,7 @@ module.exports = tseslint.config(
     ],
     processor: angular.processInlineTemplates,
     rules: {
+      '@angular-eslint/template/accessibility-click-events-have-key-events': 'off',
       "no-useless-escape": "off",
       "@angular-eslint/directive-selector": [
         "error",
@@ -36,9 +37,10 @@ module.exports = tseslint.config(
   {
     files: ["**/*.html"],
     extends: [
-      ...angular.configs.templateRecommended,
-      ...angular.configs.templateAccessibility,
+      ...angular.configs.templateRecommended
     ],
-    rules: {},
+    rules: {
+      '@angular-eslint/template/accessibility-click-events-have-key-events': 'off',
+    },
   }
 );

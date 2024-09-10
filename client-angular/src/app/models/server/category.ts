@@ -4,8 +4,8 @@ export interface CategoryRequest {
 }
 
 export interface CategoryPayload {
-  parPage: number;
-  page: number;
+  parPage: number | string;
+  page: number | string;
   searchValue: string;
 }
 

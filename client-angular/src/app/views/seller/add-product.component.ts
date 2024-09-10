@@ -2,8 +2,12 @@ import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   inject,
+  OnInit,
+  signal,
   Signal,
+  WritableSignal,
 } from '@angular/core'
 import {
   FormControl,
@@ -13,8 +17,8 @@ import {
   Validators,
 } from '@angular/forms'
 import { RouterLink } from '@angular/router'
-import { Category, ProductRequestForm } from '@app/models'
-import { selectCategories } from '@app/store/category'
+import { Category, CategoryPayload, ProductRequestForm } from '@app/models'
+import { categoryActions, selectCategories } from '@app/store/category'
 import {
   selectErrorMessage,
   selectLoader,
@@ -30,7 +34,7 @@ import { ToastrService } from 'ngx-toastr'
   templateUrl: './add-product.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddProductComponent {
+export class AddProductComponent implements OnInit {
   private readonly _store = inject(Store);
   private readonly _formBuilder: NonNullableFormBuilder = inject(
     NonNullableFormBuilder
@@ -46,6 +50,10 @@ export class AddProductComponent {
     this._store.selectSignal(selectErrorMessage);
   public $successMessage: Signal<string> =
     this._store.selectSignal(selectSuccessMessage);
+
+  public $searchValue: WritableSignal<string> = signal('');
+  public $cateShow: WritableSignal<boolean> = signal(false);
+  public $imageShow = signal([]);
 
   public productForm: FormGroup<ProductRequestForm>;
 
@@ -77,12 +85,50 @@ export class AddProductComponent {
       }),
       description: new FormControl<string>('', {
         nonNullable: true,
-        validators: [Validators.required],
       }),
       image: new FormControl<File | null>(null, {
         nonNullable: true,
         validators: [Validators.required],
       }),
     });
+
+    effect(
+      (): void => {
+        if (this.$successMessage().length > 0) {
+          this._toastr.success(this.$successMessage());
+
+          // this._store.dispatch(categoryActions.messageClear());
+
+          this.productForm.reset();
+
+          this.$imageShow.set([]);
+        }
+
+        if (this.$errorMessage().length > 0) {
+          this._toastr.error(this.$errorMessage());
+
+          // this._store.dispatch(categoryActions.messageClear());
+        }
+      },
+      { allowSignalWrites: true }
+    );
+  }
+
+  ngOnInit(): void {
+    const payload: CategoryPayload = {
+      parPage: '',
+      page: '',
+      searchValue: '',
+    };
+
+    this._store.dispatch(categoryActions.getCategories({ payload }));
+  }
+
+  public searchValue(event: Event): void {
+    console.log((event.target as HTMLInputElement).value);
+  }
+
+  public submit(): void {
+    console.log(this.productForm.value);
   }
 }
