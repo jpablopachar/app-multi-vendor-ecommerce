@@ -4,11 +4,7 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import {
-  getSeller,
-  messageClear,
-  sellerStatusUpdate,
-} from '../../store/Reducers/sellerReducer'
+import { getSeller, messageClear, sellerStatusUpdate } from '../../store/reducers/sellerReducer'
 
 const SellerDetails = () => {
   const { sellerId } = useParams()

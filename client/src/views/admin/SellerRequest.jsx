@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { FaEye } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { getSellerRequest } from '../../store/Reducers/sellerReducer'
+import { getSellersRequest } from '../../store/reducers/sellerReducer'
 import Search from '../components/Search'
 import Pagination from '../Pagination'
 
@@ -19,7 +19,7 @@ const SellerRequest = () => {
   // const [show, setShow] = useState(false)
 
   useEffect(() => {
-    dispatch(getSellerRequest({ parPage, searchValue, page: currentPage }))
+    dispatch(getSellersRequest({ parPage, searchValue, page: currentPage }))
   }, [parPage, searchValue, currentPage])
 
   return (

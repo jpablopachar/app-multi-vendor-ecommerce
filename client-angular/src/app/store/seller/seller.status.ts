@@ -1,6 +1,6 @@
 import { InfoUser } from "@app/models"
 
-export interface CategoryState {
+export interface SellerState {
   successMessage: string;
   errorMessage: string;
   loader: boolean;
