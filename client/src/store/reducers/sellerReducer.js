@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import api from '../../api/api'
 
-export const getSellerRequest = createAsyncThunk(
+export const getSellersRequest = createAsyncThunk(
   'product/getSellerRequest',
   async (
     { parPage, page, searchValue },
@@ -69,7 +69,7 @@ export const sellerReducer = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getSellerRequest.fulfilled, (state, { payload }) => {
+      .addCase(getSellersRequest.fulfilled, (state, { payload }) => {
         state.sellers = payload.sellers
         state.totalSellers = payload.totalSellers
       })
