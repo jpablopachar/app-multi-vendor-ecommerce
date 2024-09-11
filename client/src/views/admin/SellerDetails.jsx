@@ -22,7 +22,7 @@ const SellerDetails = () => {
   const submit = (event) => {
     event.preventDefault()
 
-    dispatch(sellerStatusUpdate(sellerId, status))
+    dispatch(sellerStatusUpdate({ sellerId, status }))
   }
 
   useEffect(() => {
@@ -123,7 +123,7 @@ const SellerDetails = () => {
               >
                 <option value="">--Select Status--</option>
                 <option value="active">Active</option>
-                <option value="deactive">Deactive</option>
+                <option value="pending">Pending</option>
               </select>
               <button className="bg-red-500 w-[170px] hover:shadow-red-500/40 hover:shadow-md text-white rounded-md px-7 py-2">
                 Submit

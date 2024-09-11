@@ -54,8 +54,8 @@ export const sellerStatusUpdateEffect = createEffect(
   ) => {
     return actions$.pipe(
       ofType(sellerActions.sellerStatusUpdate),
-      switchMap(({ sellerId }) => {
-        return sellerService.sellerStatusUpdate(sellerId).pipe(
+      switchMap((body) => {
+        return sellerService.sellerStatusUpdate(body).pipe(
           map((response: SellerStatusUpdateResponse) => {
             return sellerActions.sellerStatusUpdateSuccess({ response });
           })

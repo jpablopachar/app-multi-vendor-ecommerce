@@ -15,6 +15,7 @@ import { cookiesInterceptor } from './interceptors'
 import { AuthEffects, authFeatureKey, authReducer } from './store/auth'
 import { CategoryEffects, categoryFeatureKey, categoryReducer } from './store/category'
 import { ProductEffects, productFeatureKey, productReducer } from './store/product'
+import { SellerEffects, sellerFeatureKey, sellerReducer } from './store/seller'
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -30,7 +31,8 @@ export const appConfig: ApplicationConfig = {
     provideState(authFeatureKey, authReducer),
     provideState(categoryFeatureKey, categoryReducer),
     provideState(productFeatureKey, productReducer),
-    provideEffects(AuthEffects, CategoryEffects, ProductEffects),
+    provideState(sellerFeatureKey, sellerReducer),
+    provideEffects(AuthEffects, CategoryEffects, ProductEffects, SellerEffects),
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),

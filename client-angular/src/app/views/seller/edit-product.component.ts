@@ -41,7 +41,7 @@ import { ToastrService } from 'ngx-toastr'
 })
 export class EditProductComponent {
   private readonly _store = inject(Store);
-  private readonly _route = inject(ActivatedRoute);
+  private readonly _route: ActivatedRoute = inject(ActivatedRoute);
   private readonly _formBuilder: NonNullableFormBuilder = inject(
     NonNullableFormBuilder
   );

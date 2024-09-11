@@ -32,7 +32,7 @@ export class SellerService {
   }
 
   public sellerStatusUpdate(
-    body: string
+    body: { sellerId: string; status: string }
   ): Observable<SellerStatusUpdateResponse> {
     return this._http.post<SellerStatusUpdateResponse>(
       `${this._url}/seller-status-update`,
