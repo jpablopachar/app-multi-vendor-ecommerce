@@ -1,9 +1,22 @@
-import './App.css'
+/* eslint-disable react-hooks/exhaustive-deps */
+
+import { useEffect, useState } from 'react'
+import Router from './router/Router'
+import { getRoutes } from './router/routes'
+import publicRoutes from './router/routes/PublicRoutes'
 
 function App() {
+  const [allRoutes, setAllRoutes] = useState([...publicRoutes])
+
+  useEffect(() => {
+    const routes = getRoutes()
+
+    setAllRoutes([...allRoutes, routes])
+  }, [])
+
   return (
     <>
-      <h1 className="text-3xl font-bold underline">Hola mundo!</h1>
+      <Router allRoutes={allRoutes} />
     </>
   )
 }
