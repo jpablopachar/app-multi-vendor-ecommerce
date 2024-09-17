@@ -11,6 +11,7 @@ import { authRouter } from './routes/auth/authRoutes.js'
 import { categoryRouter } from './routes/dashboard/categoryRoutes.js'
 import { productRouter } from './routes/dashboard/productRoutes.js'
 import { sellerRouter } from './routes/dashboard/sellerRoutes.js'
+import { homeRouter } from './routes/home/homeRoutes.js'
 import { dbConnect } from './utils/db.js'
 
 // import { swaggerDocs } from './routes/swagger.js'
@@ -32,6 +33,7 @@ app.use('/api/auth', authRouter)
 app.use('/api', categoryRouter)
 app.use('/api', productRouter)
 app.use('/api', sellerRouter)
+app.use('/api/home', homeRouter)
 
 dbConnect().then(() => {
   app.listen(PORT, () => {
