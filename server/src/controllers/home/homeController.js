@@ -59,20 +59,22 @@ export class HomeController {
     try {
       const priceRange = { low: 0, high: 0 }
 
-      const products = await Product.find({}).limit(9).sort({ createdAt: -1 })
+      const [products, minPriceProduct, maxPriceProduct] = await Promise.all([
+        Product.find({}).limit(9).sort({ createdAt: -1 }),
+        Product.findOne({}).sort({ price: 1 }),
+        Product.findOne({}).sort({ price: -1 }),
+      ])
 
       const latestProduct = this.formatProduct(products)
 
-      const getForPrice = await Product.find({}).sort({ price: 1 })
-
-      if (getForPrice.length > 0) {
-        priceRange.high = getForPrice[getForPrice.length - 1].price
-        priceRange.low = getForPrice[0].price
+      if (minPriceProduct && maxPriceProduct) {
+        priceRange.low = minPriceProduct.price
+        priceRange.high = maxPriceProduct.price
       }
 
       responseReturn(res, 200, { latestProduct, priceRange })
     } catch (error) {
-      console.log(error.message)
+      console.error(error.message)
     }
   }
 
@@ -82,29 +84,27 @@ export class HomeController {
     req.query.parPage = parPage
 
     try {
-      const products = await Product.find({}).sort({ createdAt: -1 })
-
-      const totalProducts = new QueryProducts(products, req.query)
+      const filteredProducts = new QueryProducts(
+        await Product.find({}),
+        req.query
+      )
         .categoryQuery()
         .ratingQuery()
         .searchQuery()
         .priceQuery()
         .sortByPrice()
-        .countProducts()
 
-      const result = new QueryProducts(totalProducts, req.query)
-        .categoryQuery()
-        .ratingQuery()
-        .priceQuery()
-        .searchQuery()
-        .sortByPrice()
-        .skip()
-        .limit()
-        .getProducts()
+      const totalProductsCount = filteredProducts.countProducts()
 
-      responseReturn(res, 200, { products: result, totalProducts, parPage })
+      const result = filteredProducts.skip().limit().getProducts()
+
+      responseReturn(res, 200, {
+        products: result,
+        totalProducts: totalProductsCount,
+        parPage,
+      })
     } catch (error) {
-      console.log(error.message)
+      console.error(error.message)
     }
   }
 }
