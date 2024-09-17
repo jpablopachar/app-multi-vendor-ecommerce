@@ -17,7 +17,7 @@ import { dbConnect } from './utils/db.js'
 // import { swaggerDocs } from './routes/swagger.js'
 
 const corsOptions = {
-  origin : ['http://localhost:5173','http://localhost:4200'],
+  origin : ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:4200'],
   credentials: true
 }
 
