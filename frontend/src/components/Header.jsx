@@ -17,26 +17,16 @@ import {
 import { MdEmail } from 'react-icons/md'
 import { Link, useLocation } from 'react-router-dom'
 
-const Header = () => {
+const Header = ({ categories }) => {
   const { pathname } = useLocation()
 
-  const [showShidebar, setShowShidebar] = useState(true)
+  const [showSidebar, setShowSidebar] = useState(true)
   const [categoryShow, setCategoryShow] = useState(true)
-  const user = true
-  const wishlist_count = 3
-  const categories = [
-    'Mobiles',
-    'Laptops',
-    'Speakers',
-    'Top wear',
-    'Footwear',
-    'Watches',
-    'Home Decor',
-    'Smart Watches',
-  ]
-
   const [searchValue, setSearchValue] = useState('')
   const [category, setCategory] = useState('')
+
+  const user = true
+  const wishlist_count = 3
 
   return (
     <div className="w-full bg-white">
@@ -50,7 +40,6 @@ const Header = () => {
                 </span>
                 <span>support@gmail.com</span>
               </li>
-
               <li className="flex relative justify-center items-center gap-2 text-sm ">
                 <span>
                   <IoMdPhonePortrait />
@@ -58,7 +47,6 @@ const Header = () => {
                 <span>+(123) 3243 343</span>
               </li>
             </ul>
-
             <div>
               <div className="flex justify-center items-center gap-10">
                 <div className="flex justify-center items-center gap-4 text-black">
@@ -76,10 +64,7 @@ const Header = () => {
                   </a>
                 </div>
                 <div className="flex group cursor-pointer text-slate-800 text-sm justify-center items-center gap-1 relative after:h-[18px] after:w-[1px] after:bg-[#afafaf] after:-right-[16px] after:absolute before:absolute before:h-[18px] before:bg-[#afafaf] before:w-[1px] before:-left-[20px]">
-                  <img
-                    src="http://localhos:5174/src/assets/images/language.png"
-                    alt=""
-                  />
+                  <img src="http://localhost:3000/images/language.png" alt="" />
                   <span>
                     <IoMdArrowDropdown />
                   </span>
@@ -122,14 +107,11 @@ const Header = () => {
             <div className="md-lg:w-full w-3/12 md-lg:pt-4">
               <div className="flex justify-between items-center">
                 <Link to="/">
-                  <img
-                    src="http://localhos:5174/src/assets/images/logo.png"
-                    alt=""
-                  />
+                  <img src="http://localhost:3000/images/logo.png" alt="" />
                 </Link>
                 <div
                   className="justify-center items-center w-[30px] h-[30px] bg-white text-slate-600 border border-slate-600 rounded-sm cursor-pointer lg:hidden md-lg:flex xl:hidden hidden"
-                  onClick={() => setShowShidebar(false)}
+                  onClick={() => setShowSidebar(false)}
                 >
                   <span>
                     {' '}
@@ -138,6 +120,7 @@ const Header = () => {
                 </div>
               </div>
             </div>
+
             <div className="md:lg:w-full w-9/12">
               <div className="flex justify-between md-lg:justify-center items-center flex-wrap pl-8">
                 <ul className="flex justify-start items-start gap-8 text-sm font-bold uppercase md-lg:hidden">
@@ -150,6 +133,7 @@ const Header = () => {
                       Home
                     </Link>
                   </li>
+
                   <li>
                     <Link
                       to="/shops"
@@ -196,6 +180,7 @@ const Header = () => {
                     </Link>
                   </li>
                 </ul>
+
                 <div className="flex md-lg:hidden justify-center items-center gap-5">
                   <div className="flex justify-center gap-5">
                     <div className="relative flex justify-center items-center cursor-pointer w-[35px] h-[35px] rounded-full bg-[#e2e2e2]">
@@ -206,6 +191,7 @@ const Header = () => {
                         {wishlist_count}
                       </div>
                     </div>
+
                     <div className="relative flex justify-center items-center cursor-pointer w-[35px] h-[35px] rounded-full bg-[#e2e2e2]">
                       <span className="text-xl text-green-500">
                         <FaCartShopping />
@@ -221,31 +207,26 @@ const Header = () => {
           </div>
         </div>
       </div>
+
       <div className="hidden md-lg:block">
         <div
-          onClick={() => setShowShidebar(true)}
+          onClick={() => setShowSidebar(true)}
           className={`fixed duration-200 transition-all ${
-            showShidebar ? 'invisible' : 'visible'
+            showSidebar ? 'invisible' : 'visible'
           } hidden md-lg:block w-screen h-screen bg-[rgba(0,0,0,0.5)] top-0 left-0 z-20 `}
         ></div>
         <div
           className={`w-[300px] z-[9999] transition-all duration-200 fixed ${
-            showShidebar ? '-left-[300px]' : 'left-0 top-0'
+            showSidebar ? '-left-[300px]' : 'left-0 top-0'
           } overflow-y-auto bg-white h-screen py-6 px-8 `}
         >
           <div className="flex justify-start flex-col gap-6">
             <Link to="/">
-              <img
-                src="http://localhos:5174/src/assets/images/logo.png"
-                alt=""
-              />
+              <img src="http://localhost:3000/images/logo.png" alt="" />
             </Link>
             <div className="flex justify-start items-center gap-10">
               <div className="flex group cursor-pointer text-slate-800 text-sm justify-center items-center gap-1 relative after:h-[18px] after:w-[1px] after:bg-[#afafaf] after:-right-[16px] after:absolute ">
-                <img
-                  src="http://localhos:5174/src/assets/images/language.png"
-                  alt=""
-                />
+                <img src="http://localhost:3000/images/language.png" alt="" />
                 <span>
                   <IoMdArrowDropdown />
                 </span>
@@ -278,7 +259,6 @@ const Header = () => {
                 </Link>
               )}
             </div>
-
             <ul className="flex flex-col justify-start items-start text-sm font-bold uppercase">
               <li>
                 <Link
@@ -289,7 +269,6 @@ const Header = () => {
                   Home
                 </Link>
               </li>
-
               <li>
                 <Link
                   to="/shops"
@@ -398,7 +377,12 @@ const Header = () => {
                         key={i}
                         className="flex justify-start items-center gap-2 px-[24px] py-[6px]"
                       >
-                        <Link className="text-sm block">{c}</Link>
+                        <img
+                          src={c.image}
+                          className="w-[30px] h-[30px] rounded-full overflow-hidden"
+                          alt=""
+                        />
+                        <Link className="text-sm block">{c.name}</Link>
                       </li>
                     )
                   })}
@@ -420,7 +404,7 @@ const Header = () => {
                       <option value="">Select Category</option>
                       {categories.map((c, i) => (
                         <option key={i} value={c}>
-                          {c}
+                          {c.name}
                         </option>
                       ))}
                     </select>
