@@ -8,21 +8,10 @@ export class HomeController {
   formatProduct = (products) => {
     const productsTemp = []
 
-    let i = 0
+    for (let i = 0; i < products.length; i += 3) {
+      const chunk = products.slice(i, i + 3)
 
-    while (i < products.length) {
-      let temp = []
-      let j = i
-
-      while (j < i + 3) {
-        if (products[j]) temp = [...temp, products[j]]
-
-        j++
-      }
-
-      productsTemp.push([...temp])
-
-      i = j
+      productsTemp.push(chunk)
     }
 
     return productsTemp
@@ -40,19 +29,17 @@ export class HomeController {
 
   getProducts = async (req, res) => {
     try {
-      const products = await Product.find({}).limit(12).sort({ createdAt: -1 })
-
-      const allProduct1 = await Product.find({})
-        .limit(9)
-        .sort({ createdAt: -1 })
+      const [products, allProduct1, allProduct2, allProduct3] =
+        await Promise.all([
+          Product.find({}).limit(12).sort({ createdAt: -1 }),
+          Product.find({}).limit(9).sort({ createdAt: -1 }),
+          Product.find({}).limit(9).sort({ rating: -1 }),
+          Product.find({}).limit(9).sort({ discount: -1 }),
+        ])
 
       const latestProduct = this.formatProduct(allProduct1)
 
-      const allProduct2 = await Product.find({}).limit(9).sort({ rating: -1 })
-
       const topRatedProduct = this.formatProduct(allProduct2)
-
-      const allProduct3 = await Product.find({}).limit(9).sort({ discount: -1 })
 
       const discountProduct = this.formatProduct(allProduct3)
 
