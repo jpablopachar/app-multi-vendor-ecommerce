@@ -8,3 +8,5 @@ export const homeRouter = Router()
 
 homeRouter.get('/get-categories', homeController.getCategories)
 homeRouter.get('/get-products', homeController.getProducts)
+homeRouter.get('/product-price-range-latest', homeController.productPriceRange)
+homeRouter.get('/query-products', homeController.queryProducts)
