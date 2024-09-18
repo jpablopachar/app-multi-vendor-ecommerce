@@ -4,7 +4,7 @@ import { compare, hash } from 'bcrypt'
 import SellerCustomer from '../../models/chat/seller-customer.js'
 import Customer from '../../models/customer.js'
 import { responseReturn } from '../../utils/response.js'
-import { createToken } from '../../utils/tokenCreate'
+import { createToken } from '../../utils/tokenCreate.js'
 
 export class CustomerAuthController {
   customerRegister = async (req, res) => {

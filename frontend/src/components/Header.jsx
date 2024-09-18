@@ -24,6 +24,7 @@ const Header = () => {
   const { pathname } = useLocation()
 
   const { categories } = useSelector((state) => state.home)
+  const { userInfo } = useSelector((state) => state.auth)
 
   const [showSidebar, setShowSidebar] = useState(true)
   const [categoryShow, setCategoryShow] = useState(true)
@@ -34,8 +35,8 @@ const Header = () => {
     navigate(`/products/search?category=${category}&&value=${searchValue}`)
   }
 
-  const user = true
-  const wishlist_count = 3
+  // const user = false
+  const wishlistCount = 3
 
   return (
     <div className="w-full bg-white">
@@ -85,7 +86,7 @@ const Header = () => {
                     <li>English</li>
                   </ul>
                 </div>
-                {user ? (
+                {userInfo ? (
                   <Link
                     className="flex cursor-pointer justify-center items-center gap-2 text-sm text-black"
                     to="/dashboard"
@@ -94,7 +95,7 @@ const Header = () => {
                       {' '}
                       <FaUser />{' '}
                     </span>
-                    <span>Kazi Ariyan </span>
+                    <span>{userInfo.name}</span>
                   </Link>
                 ) : (
                   <Link
@@ -200,7 +201,7 @@ const Header = () => {
                         <FaHeart />
                       </span>
                       <div className="w-[20px] h-[20px] absolute bg-red-500 rounded-full text-white flex justify-center items-center -top-[3px] -right-[5px] ">
-                        {wishlist_count}
+                        {wishlistCount}
                       </div>
                     </div>
                     <div className="relative flex justify-center items-center cursor-pointer w-[35px] h-[35px] rounded-full bg-[#e2e2e2]">
@@ -208,7 +209,7 @@ const Header = () => {
                         <FaCartShopping />
                       </span>
                       <div className="w-[20px] h-[20px] absolute bg-red-500 rounded-full text-white flex justify-center items-center -top-[3px] -right-[5px] ">
-                        {wishlist_count}
+                        {wishlistCount}
                       </div>
                     </div>
                   </div>
@@ -252,7 +253,7 @@ const Header = () => {
                   <li>English</li>
                 </ul>
               </div>
-              {user ? (
+              {userInfo ? (
                 <Link
                   className="flex cursor-pointer justify-center items-center gap-2 text-sm text-black"
                   to="/dashboard"
@@ -261,7 +262,7 @@ const Header = () => {
                     {' '}
                     <FaUser />{' '}
                   </span>
-                  <span>Kazi Ariyan </span>
+                  <span>{userInfo.name}</span>
                 </Link>
               ) : (
                 <Link

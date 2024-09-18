@@ -6,6 +6,7 @@ const customerAuthController = new CustomerAuthController()
 
 export const customerAuthRouter = Router()
 
-customerAuthRouter.get('/customer-register', customerAuthController.customerRegister)
-customerAuthRouter.get('/customer-login', customerAuthController.customerLogin)
+customerAuthRouter.post('/customer-register', customerAuthController.customerRegister)
+customerAuthRouter.post('/customer-login', customerAuthController.customerLogin)
+
 customerAuthRouter.get('/logout', customerAuthController.customerLogout)
