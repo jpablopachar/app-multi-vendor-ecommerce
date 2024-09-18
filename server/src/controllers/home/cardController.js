@@ -1,5 +1,6 @@
 import { Types } from 'mongoose'
 import Card from '../../models/card.js'
+import WishList from '../../models/wishList.js'
 import { responseReturn } from '../../utils/response.js'
 
 export class CardController {
@@ -117,7 +118,6 @@ export class CardController {
 
       const productArray = Object.values(productsBySeller)
 
-      // Enviar respuesta
       responseReturn(res, 200, {
         cardProducts: productArray,
         price: calculatePrice,
@@ -125,6 +125,99 @@ export class CardController {
         shippingFee: 20 * productArray.length,
         outOfStockProduct,
         buyProductItem,
+      })
+    } catch (error) {
+      responseReturn(res, 500, { error: error.message })
+    }
+  }
+
+  deleteCardProducts = async (req, res) => {
+    const { cardId } = req.params
+
+    try {
+      await Card.findByIdAndDelete(cardId)
+
+      responseReturn(res, 200, { message: 'Product deleted successfully' })
+    } catch (error) {
+      responseReturn(res, 500, { error: error.message })
+    }
+  }
+
+  quantityIncrement = async (req, res) => {
+    const { cardId } = req.params
+
+    try {
+      const product = await Card.findById(cardId)
+
+      const { quantity } = product
+
+      await Card.findByIdAndUpdate(cardId, { quantity: quantity + 1 })
+
+      responseReturn(res, 200, { message: 'Quantity updated' })
+    } catch (error) {
+      responseReturn(res, 500, { error: error.message })
+    }
+  }
+
+  quantityDecrement = async (req, res) => {
+    const { cardId } = req.params
+
+    try {
+      const product = await Card.findById(cardId)
+
+      const { quantity } = product
+
+      await Card.findByIdAndUpdate(cardId, { quantity: quantity - 1 })
+
+      responseReturn(res, 200, { message: 'Quantity updated' })
+    } catch (error) {
+      responseReturn(res, 500, { error: error.message })
+    }
+  }
+
+  addWishList = async (req, res) => {
+    const { slug } = req.body
+
+    try {
+      const product = await WishList.findOne({ slug })
+
+      if (product) {
+        return responseReturn(res, 404, {
+          error: 'Product already added to wish list',
+        })
+      } else {
+        await WishList.create(req.body)
+
+        return responseReturn(res, 201, {
+          message: 'Added to wish list successfully',
+        })
+      }
+    } catch (error) {
+      responseReturn(res, 500, { error: error.message })
+    }
+  }
+
+  getWishList = async (req, res) => {
+    const { userId } = req.params
+
+    try {
+      const wishList = await WishList.find({ userId })
+
+      responseReturn(res, 200, { wishListCount: wishList.length, wishList })
+    } catch (error) {
+      responseReturn(res, 500, { error: error.message })
+    }
+  }
+
+  removeWishList = async (req, res) => {
+    const { wishListId } = req.params
+
+    try {
+      await WishList.findByIdAndDelete(wishListId)
+
+      responseReturn(res, 200, {
+        message: 'Product removed from wishList',
+        wishListId,
       })
     } catch (error) {
       responseReturn(res, 500, { error: error.message })
