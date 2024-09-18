@@ -7,35 +7,34 @@ export class CardController {
     const { userId, productId, quantity } = req.body
 
     try {
-      /* Busca un documento específico que cumpla con dos condiciones: que el campo productId
-      sea igual a productId y que el campo userId sea igual a userId. */
-      const product = await Card.findOne({
-        $and: [{ productId: { $eq: productId } }, { userId: { $eq: userId } }],
-      })
+      const existingProduct = await Card.findOne({ productId, userId })
 
-      if (product) {
-        responseReturn(res, 404, { error: 'Product already added to card' })
+      if (existingProduct) {
+        return responseReturn(res, 404, {
+          error: 'Product already added to card',
+        })
       } else {
         const product = await Card.create({ userId, productId, quantity })
 
-        responseReturn(res, 201, {
+        return responseReturn(res, 201, {
           message: 'Added to card successfully',
           product,
         })
       }
     } catch (error) {
-      responseReturn(res, 500, { error: error.message })
+      return responseReturn(res, 500, { error: error.message })
     }
   }
 
   getCardProducts = async (req, res) => {
     const { userId } = req.params
 
-    const co = 5
+    const commissionRate = 5
 
     try {
+      // Obtener productos del carrito y realizar la relación con los productos
       const cardProducts = await Card.aggregate([
-        { $match: { userId: { $eq: Types.ObjectId(userId) } } },
+        { $match: { userId: Types.ObjectId(userId) } },
         {
           $lookup: {
             from: 'Products',
@@ -50,92 +49,80 @@ export class CardController {
       let calculatePrice = 0
       let cardProductCount = 0
 
+      // Separar productos fuera de stock y con stock
       const outOfStockProduct = cardProducts.filter(
         (product) => product.products[0].stock < product.quantity
       )
-
-      for (let i = 0; i < outOfStockProduct.length; i++) {
-        cardProductCount = cardProductCount + outOfStockProduct[i].quantity
-      }
 
       const stockProduct = cardProducts.filter(
         (product) => product.products[0].stock >= product.quantity
       )
 
-      for (let i = 0; i < stockProduct.length; i++) {
-        const { quantity } = stockProduct[i]
+      // Calcular cantidad de productos fuera de stock
+      cardProductCount = outOfStockProduct.reduce(
+        (acc, product) => acc + product.quantity,
+        0
+      )
 
-        cardProductCount = buyProductItem + quantity
-        buyProductItem = buyProductItem + quantity
+      // Calcular precio total y productos comprables
+      stockProduct.forEach((product) => {
+        const { quantity } = product
+        const { price, discount } = product.products[0]
 
-        const { price, discount } = stockProduct[i].products[0]
+        // Actualiza el total de productos comprables
+        buyProductItem += quantity
 
-        if (discount !== 0) {
-          calculatePrice =
-            calculatePrice +
-            quantity * (price - Math.floor((price * discount) / 100))
-        } else {
-          calculatePrice = calculatePrice + quantity * price
-        }
-      }
+        // Calcula el precio con descuento si existe
+        let finalPrice = price
 
-      let p = []
-      let unique = [
-        ...new Set(
-          stockProduct.map((product) => product.products[0].sellerId.toString())
-        ),
-      ]
+        if (discount) finalPrice = price - Math.floor((price * discount) / 100)
 
-      for (let i = 0; i < unique.length; i++) {
-        let price = 0
+        calculatePrice += quantity * finalPrice
+      })
 
-        for (let j = 0; j < stockProduct.length; j++) {
-          const productTemp = stockProduct[j].products[0]
+      // Agrupar productos por vendedor
+      const productsBySeller = stockProduct.reduce((acc, product) => {
+        const productInfo = product.products[0]
+        const sellerId = productInfo.sellerId.toString()
 
-          if (unique[i] === productTemp.sellerId.toString()) {
-            let pri = 0
-
-            if (productTemp.discount !== 0) {
-              pri =
-                productTemp.price -
-                Math.floor((productTemp.price * productTemp.discount) / 100)
-            } else {
-              pri = productTemp.price
-            }
-
-            pri = pri - Math.floor((pri * co) / 100)
-            price = price + pri * stockProduct[j].quantity
-
-            p[i] = {
-              sellerId: unique[i],
-              shopName: productTemp.shopName,
-              price,
-              products: p[i]
-                ? [
-                    ...p[i].products,
-                    {
-                      _id: stockProduct[j]._id,
-                      quantity: stockProduct[j].quantity,
-                      productInfo: productTemp,
-                    },
-                  ]
-                : [
-                    {
-                      _id: stockProduct[j]._id,
-                      quantity: stockProduct[j].quantity,
-                      productInfo: productTemp,
-                    },
-                  ],
-            }
+        if (!acc[sellerId]) {
+          acc[sellerId] = {
+            sellerId: sellerId,
+            shopName: productInfo.shopName,
+            price: 0,
+            products: [],
           }
         }
-      }
 
+        let productPrice = productInfo.price
+
+        if (productInfo.discount)
+          productPrice =
+            productInfo.price -
+            Math.floor((productInfo.price * productInfo.discount) / 100)
+
+        // Aplicar comisión
+        productPrice =
+          productPrice - Math.floor((productPrice * commissionRate) / 100)
+        acc[sellerId].price += productPrice * product.quantity
+
+        acc[sellerId].products.push({
+          _id: product._id,
+          quantity: product.quantity,
+          productInfo: productInfo,
+        })
+
+        return acc
+      }, {})
+
+      const productArray = Object.values(productsBySeller)
+
+      // Enviar respuesta
       responseReturn(res, 200, {
-        cardProducts: p,
+        cardProducts: productArray,
         price: calculatePrice,
         cardProductCount,
-        shippingFee: 20 * p.length,
+        shippingFee: 20 * productArray.length,
         outOfStockProduct,
         buyProductItem,
       })
