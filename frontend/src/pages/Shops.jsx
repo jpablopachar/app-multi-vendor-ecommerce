@@ -12,14 +12,19 @@ import Header from '../components/Header'
 import Pagination from '../components/Pagination'
 import Products from '../components/products/Products'
 import ShopProducts from '../components/products/ShopProducts'
-import { productPriceRange } from '../store/reducers/homeReducer'
+import { productPriceRange, queryProducts } from '../store/reducers/homeReducer'
 
 const Shops = () => {
   const dispatch = useDispatch()
 
-  const { products, categories, priceRange, latestProduct } = useSelector(
-    (state) => state.home
-  )
+  const {
+    products,
+    categories,
+    priceRange,
+    latestProduct,
+    totalProducts,
+    parPage,
+  } = useSelector((state) => state.home)
 
   useEffect(() => {
     dispatch(productPriceRange())
@@ -32,11 +37,50 @@ const Shops = () => {
   }, [priceRange])
 
   const [filter, setFilter] = useState(true)
-  const [state, setState] = useState({ values: [priceRange.low, priceRange.high] })
+  const [state, setState] = useState({
+    values: [priceRange.low, priceRange.high],
+  })
   const [rating, setRating] = useState('')
   const [styles, setStyles] = useState('grid')
-  const [parPage, setParPage] = useState(1)
   const [pageNumber, setPageNumber] = useState(1)
+  const [sortPrice, setSortPrice] = useState('')
+  const [category, setCategory] = useState('')
+
+  const queryCategory = (event, value) => {
+    if (event.target.checked) {
+      setCategory(value)
+    } else {
+      setCategory('')
+    }
+  }
+
+  useEffect(() => {
+    dispatch(
+      queryProducts({
+        category,
+        rating,
+        low: state.values[0],
+        high: state.values[1],
+        sortPrice,
+        pageNumber,
+      })
+    )
+  }, [state.values[0], state.values[1], rating, sortPrice, category])
+
+  const resetRating = () => {
+    setRating('')
+
+    dispatch(
+      queryProducts({
+        category,
+        rating: '',
+        low: state.values[0],
+        high: state.values[1],
+        sortPrice,
+        pageNumber,
+      })
+    )
+  }
 
   return (
     <div>
@@ -84,7 +128,12 @@ const Shops = () => {
                     key={i}
                     className="flex justify-start items-center gap-2 py-1"
                   >
-                    <input type="checkbox" id={c.name} />
+                    <input
+                      checked={category === c.name ? true : false}
+                      onChange={(e) => queryCategory(e, c.name)}
+                      type="checkbox"
+                      id={c.name}
+                    />
                     <label
                       className="text-slate-600 block cursor-pointer"
                       htmlFor={c.name}
@@ -114,9 +163,9 @@ const Shops = () => {
                   )}
                   renderThumb={({ props, index }) => (
                     <div
+                      className="w-[15px] h-[15px] bg-[#059473] rounded-full"
                       {...props}
                       key={index}
-                      className="w-[15px] h-[15px] bg-[#059473] rounded-full"
                     />
                   )}
                 />
@@ -232,7 +281,10 @@ const Shops = () => {
                       <CiStar />{' '}
                     </span>
                   </div>
-                  <div className="text-orange-500 flex justify-start items-start gap-2 text-xl cursor-pointer">
+                  <div
+                    onClick={resetRating}
+                    className="text-orange-500 flex justify-start items-start gap-2 text-xl cursor-pointer"
+                  >
                     <span>
                       <CiStar />{' '}
                     </span>
@@ -259,10 +311,12 @@ const Shops = () => {
               <div className="pl-8 md:pl-0">
                 <div className="py-4 bg-white mb-10 px-3 rounded-md flex justify-between items-start border">
                   <h2 className="text-lg font-medium text-slate-600">
-                    14 Products{' '}
+                    {' '}
+                    ({totalProducts}) Products{' '}
                   </h2>
                   <div className="flex justify-center items-center gap-3">
                     <select
+                      onChange={(e) => setSortPrice(e.target.value)}
                       className="p-1 border outline-0 text-slate-600 font-semibold"
                       name=""
                       id=""
@@ -292,16 +346,18 @@ const Shops = () => {
                   </div>
                 </div>
                 <div className="pb-8">
-                  <ShopProducts styles={styles} />
+                  <ShopProducts products={products} styles={styles} />
                 </div>
                 <div>
-                  <Pagination
-                    pageNumber={pageNumber}
-                    setPageNumber={setPageNumber}
-                    totalItem={10}
-                    parPage={parPage}
-                    showItem={Math.floor(10 / 3)}
-                  />
+                  {totalProducts > parPage && (
+                    <Pagination
+                      pageNumber={pageNumber}
+                      setPageNumber={setPageNumber}
+                      totalItem={totalProducts}
+                      parPage={parPage}
+                      showItem={Math.floor(totalProducts / parPage)}
+                    />
+                  )}
                 </div>
               </div>
             </div>

@@ -20,8 +20,6 @@ export const getProducts = createAsyncThunk(
     try {
       const { data } = await api.get('/home/get-products')
 
-      console.log(data);
-
       return fulfillWithValue(data)
     } catch (error) {
       console.log(error.response)
@@ -35,7 +33,20 @@ export const productPriceRange = createAsyncThunk(
     try {
       const { data } = await api.get('/home/product-price-range-latest')
 
-      console.log(data);
+      return fulfillWithValue(data)
+    } catch (error) {
+      console.log(error.response)
+    }
+  }
+)
+
+export const queryProducts = createAsyncThunk(
+  'product/queryProducts',
+  async (query, { fulfillWithValue }) => {
+    try {
+      const { data } = await api.get(
+        `/home/query-products?category=${query.category}&&rating=${query.rating}&&lowPrice=${query.low}&&highPrice=${query.high}&&sortPrice=${query.sortPrice}&&pageNumber=${query.pageNumber}&&searchValue=${query.searchValue ? query.searchValue : ''} `
+      )
 
       return fulfillWithValue(data)
     } catch (error) {
@@ -49,6 +60,8 @@ export const homeReducer = createSlice({
   initialState: {
     categories: [],
     products: [],
+    totalProducts: 0,
+    parPage: 3,
     latestProduct: [],
     topRatedProduct: [],
     discountProduct: [],
@@ -72,6 +85,11 @@ export const homeReducer = createSlice({
       .addCase(productPriceRange.fulfilled, (state, { payload }) => {
         state.latestProduct = payload.latestProduct
         state.priceRange = payload.priceRange
+      })
+      .addCase(queryProducts.fulfilled, (state, { payload }) => {
+        state.products = payload.products
+        state.totalProducts = payload.totalProducts
+        state.parPage = payload.parPage
       })
   },
 })

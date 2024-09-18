@@ -16,9 +16,11 @@ import {
 } from 'react-icons/io'
 import { MdEmail } from 'react-icons/md'
 import { useSelector } from 'react-redux'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 const Header = () => {
+  const navigate = useNavigate()
+
   const { pathname } = useLocation()
 
   const { categories } = useSelector((state) => state.home)
@@ -27,6 +29,10 @@ const Header = () => {
   const [categoryShow, setCategoryShow] = useState(true)
   const [searchValue, setSearchValue] = useState('')
   const [category, setCategory] = useState('')
+
+  const search = () => {
+    navigate(`/products/search?category=${category}&&value=${searchValue}`)
+  }
 
   const user = true
   const wishlist_count = 3
@@ -67,7 +73,10 @@ const Header = () => {
                   </a>
                 </div>
                 <div className="flex group cursor-pointer text-slate-800 text-sm justify-center items-center gap-1 relative after:h-[18px] after:w-[1px] after:bg-[#afafaf] after:-right-[16px] after:absolute before:absolute before:h-[18px] before:bg-[#afafaf] before:w-[1px] before:-left-[20px]">
-                  <img src="http://localhost:3000/images/language.png" alt="" />
+                  <img
+                    src="http://localhost:5174/src/assets/images/language.png"
+                    alt=""
+                  />
                   <span>
                     <IoMdArrowDropdown />
                   </span>
@@ -110,7 +119,10 @@ const Header = () => {
             <div className="md-lg:w-full w-3/12 md-lg:pt-4">
               <div className="flex justify-between items-center">
                 <Link to="/">
-                  <img src="http://localhost:3000/images/logo.png" alt="" />
+                  <img
+                    src="http://localhost:5174/src/assets/images/logo.png"
+                    alt=""
+                  />
                 </Link>
                 <div
                   className="justify-center items-center w-[30px] h-[30px] bg-white text-slate-600 border border-slate-600 rounded-sm cursor-pointer lg:hidden md-lg:flex xl:hidden hidden"
@@ -221,11 +233,17 @@ const Header = () => {
         >
           <div className="flex justify-start flex-col gap-6">
             <Link to="/">
-              <img src="http://localhost:3000/images/logo.png" alt="" />
+              <img
+                src="http://localhost:5174/src/assets/images/logo.png"
+                alt=""
+              />
             </Link>
             <div className="flex justify-start items-center gap-10">
               <div className="flex group cursor-pointer text-slate-800 text-sm justify-center items-center gap-1 relative after:h-[18px] after:w-[1px] after:bg-[#afafaf] after:-right-[16px] after:absolute ">
-                <img src="http://localhost:3000/images/language.png" alt="" />
+                <img
+                  src="http://localhost:5174/src/assets/images/language.png"
+                  alt=""
+                />
                 <span>
                   <IoMdArrowDropdown />
                 </span>
@@ -382,7 +400,12 @@ const Header = () => {
                           className="w-[30px] h-[30px] rounded-full overflow-hidden"
                           alt=""
                         />
-                        <Link className="text-sm block">{c.name}</Link>
+                        <Link
+                          to={`/products?category=${c.name}`}
+                          className="text-sm block"
+                        >
+                          {c.name}
+                        </Link>
                       </li>
                     )
                   })}
@@ -403,8 +426,9 @@ const Header = () => {
                     >
                       <option value="">Select Category</option>
                       {categories.map((c, i) => (
-                        <option key={i} value={c}>
-                          {c.name}
+                        <option key={i} value={c.name}>
+                          {' '}
+                          {c.name}{' '}
                         </option>
                       ))}
                     </select>
@@ -417,7 +441,10 @@ const Header = () => {
                     id=""
                     placeholder="What do you need"
                   />
-                  <button className="bg-[#059473] right-0 absolute px-8 h-full font-semibold uppercase text-white">
+                  <button
+                    onClick={search}
+                    className="bg-[#059473] right-0 absolute px-8 h-full font-semibold uppercase text-white"
+                  >
                     Search
                   </button>
                 </div>
