@@ -6,13 +6,12 @@ import Footer from '../components/Footer'
 import Header from '../components/Header'
 import FeatureProducts from '../components/products/FeatureProducts'
 import Products from '../components/products/Products'
-import { getCategories, getProducts } from '../store/reducers/homeReducer'
+import { getProducts } from '../store/reducers/homeReducer'
 
 const Home = () => {
   const dispatch = useDispatch()
 
   const {
-    categories,
     products,
     latestProduct,
     topRatedProduct,
@@ -20,15 +19,14 @@ const Home = () => {
   } = useSelector((state) => state.home)
 
   useEffect(() => {
-    dispatch(getCategories())
     dispatch(getProducts())
   }, [])
 
   return (
     <div className="w-full">
-      <Header categories={categories} />
+      <Header/>
       <Banner />
-      <Category categories={categories} />
+      <Category />
       <div className="py-[45px]">
         <FeatureProducts products={products} />
       </div>

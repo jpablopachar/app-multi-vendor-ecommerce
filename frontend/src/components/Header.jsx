@@ -15,10 +15,13 @@ import {
   IoMdPhonePortrait,
 } from 'react-icons/io'
 import { MdEmail } from 'react-icons/md'
+import { useSelector } from 'react-redux'
 import { Link, useLocation } from 'react-router-dom'
 
-const Header = ({ categories }) => {
+const Header = () => {
   const { pathname } = useLocation()
+
+  const { categories } = useSelector((state) => state.home)
 
   const [showSidebar, setShowSidebar] = useState(true)
   const [categoryShow, setCategoryShow] = useState(true)
@@ -120,7 +123,6 @@ const Header = ({ categories }) => {
                 </div>
               </div>
             </div>
-
             <div className="md:lg:w-full w-9/12">
               <div className="flex justify-between md-lg:justify-center items-center flex-wrap pl-8">
                 <ul className="flex justify-start items-start gap-8 text-sm font-bold uppercase md-lg:hidden">
@@ -133,7 +135,6 @@ const Header = ({ categories }) => {
                       Home
                     </Link>
                   </li>
-
                   <li>
                     <Link
                       to="/shops"
@@ -180,7 +181,6 @@ const Header = ({ categories }) => {
                     </Link>
                   </li>
                 </ul>
-
                 <div className="flex md-lg:hidden justify-center items-center gap-5">
                   <div className="flex justify-center gap-5">
                     <div className="relative flex justify-center items-center cursor-pointer w-[35px] h-[35px] rounded-full bg-[#e2e2e2]">
@@ -191,7 +191,6 @@ const Header = ({ categories }) => {
                         {wishlist_count}
                       </div>
                     </div>
-
                     <div className="relative flex justify-center items-center cursor-pointer w-[35px] h-[35px] rounded-full bg-[#e2e2e2]">
                       <span className="text-xl text-green-500">
                         <FaCartShopping />
@@ -207,7 +206,6 @@ const Header = ({ categories }) => {
           </div>
         </div>
       </div>
-
       <div className="hidden md-lg:block">
         <div
           onClick={() => setShowSidebar(true)}
@@ -215,6 +213,7 @@ const Header = ({ categories }) => {
             showSidebar ? 'invisible' : 'visible'
           } hidden md-lg:block w-screen h-screen bg-[rgba(0,0,0,0.5)] top-0 left-0 z-20 `}
         ></div>
+
         <div
           className={`w-[300px] z-[9999] transition-all duration-200 fixed ${
             showSidebar ? '-left-[300px]' : 'left-0 top-0'
@@ -365,6 +364,7 @@ const Header = ({ categories }) => {
                   <IoIosArrowDown />
                 </span>
               </div>
+
               <div
                 className={`${
                   categoryShow ? 'h-0' : 'h-[400px]'

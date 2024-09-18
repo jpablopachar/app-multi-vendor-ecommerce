@@ -1,31 +1,38 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AiFillStar } from 'react-icons/ai'
 import { BsFillGridFill } from 'react-icons/bs'
 import { CiStar } from 'react-icons/ci'
 import { FaThList } from 'react-icons/fa'
 import { IoIosArrowForward } from 'react-icons/io'
 import { Range } from 'react-range'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import Footer from '../components/Footer'
 import Header from '../components/Header'
 import Pagination from '../components/Pagination'
 import Products from '../components/products/Products'
 import ShopProducts from '../components/products/ShopProducts'
+import { productPriceRange } from '../store/reducers/homeReducer'
 
 const Shops = () => {
-  const categories = [
-    'Mobiles',
-    'Laptops',
-    'Speakers',
-    'Top wear',
-    'Footwear',
-    'Watches',
-    'Home Decor',
-    'Smart Watches',
-  ]
+  const dispatch = useDispatch()
+
+  const { products, categories, priceRange, latestProduct } = useSelector(
+    (state) => state.home
+  )
+
+  useEffect(() => {
+    dispatch(productPriceRange())
+  }, [])
+
+  useEffect(() => {
+    setState({
+      values: [priceRange.low, priceRange.high],
+    })
+  }, [priceRange])
 
   const [filter, setFilter] = useState(true)
-  const [state, setState] = useState({ values: [50, 1500] })
+  const [state, setState] = useState({ values: [priceRange.low, priceRange.high] })
   const [rating, setRating] = useState('')
   const [styles, setStyles] = useState('grid')
   const [parPage, setParPage] = useState(1)
@@ -77,12 +84,12 @@ const Shops = () => {
                     key={i}
                     className="flex justify-start items-center gap-2 py-1"
                   >
-                    <input type="checkbox" id={c} />
+                    <input type="checkbox" id={c.name} />
                     <label
                       className="text-slate-600 block cursor-pointer"
-                      htmlFor={c}
+                      htmlFor={c.name}
                     >
-                      {c}
+                      {c.name}
                     </label>
                   </div>
                 ))}
@@ -93,8 +100,8 @@ const Shops = () => {
                 </h2>
                 <Range
                   step={5}
-                  min={50}
-                  max={1500}
+                  min={priceRange.low}
+                  max={priceRange.high}
                   values={state.values}
                   onChange={(values) => setState({ values })}
                   renderTrack={({ props, children }) => (
@@ -105,10 +112,11 @@ const Shops = () => {
                       {children}
                     </div>
                   )}
-                  renderThumb={({ props }) => (
+                  renderThumb={({ props, index }) => (
                     <div
-                      className="w-[15px] h-[15px] bg-[#059473] rounded-full"
                       {...props}
+                      key={index}
+                      className="w-[15px] h-[15px] bg-[#059473] rounded-full"
                     />
                   )}
                 />
@@ -244,7 +252,7 @@ const Shops = () => {
                 </div>
               </div>
               <div className="py-5 flex flex-col gap-4 md:hidden">
-                <Products title="Latest Product" />
+                <Products title="Latest Product" products={latestProduct} />
               </div>
             </div>
             <div className="w-9/12 md-lg:w-8/12 md:w-full">
