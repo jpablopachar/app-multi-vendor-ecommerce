@@ -210,14 +210,14 @@ export class CardController {
   }
 
   removeWishList = async (req, res) => {
-    const { wishListId } = req.params
+    const { wishlistId } = req.params
 
     try {
-      await WishList.findByIdAndDelete(wishListId)
+      await WishList.findByIdAndDelete(wishlistId)
 
       responseReturn(res, 200, {
         message: 'Product removed from wishList',
-        wishListId,
+        wishlistId,
       })
     } catch (error) {
       responseReturn(res, 500, { error: error.message })
