@@ -1,9 +1,47 @@
+import { useEffect } from 'react'
+import toast from 'react-hot-toast'
 import { FaEye, FaRegHeart } from 'react-icons/fa'
 import { RiShoppingCartLine } from 'react-icons/ri'
-import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useNavigate } from 'react-router-dom'
+import { addToCard, messageClear } from '../../store/reducers/cardReducer'
 import Rating from '../Rating'
 
 const FeatureProducts = ({ products }) => {
+  const navigate = useNavigate()
+
+  const dispatch = useDispatch()
+
+  const { userInfo } = useSelector((state) => state.auth)
+
+  const { errorMessage, successMessage } = useSelector((state) => state.card)
+
+  const addCard = (id) => {
+    if (userInfo) {
+      dispatch(
+        addToCard({
+          userId: userInfo.id,
+          quantity: 1,
+          productId: id,
+        })
+      )
+    } else {
+      navigate('/login')
+    }
+  }
+
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage)
+
+      dispatch(messageClear())
+    }
+    if (errorMessage) {
+      toast.error(errorMessage)
+
+      dispatch(messageClear())
+    }
+  }, [successMessage, errorMessage])
   return (
     <div className="w-[85%] flex flex-wrap mx-auto">
       <div className="w-full">
@@ -41,11 +79,15 @@ const FeatureProducts = ({ products }) => {
                 >
                   <FaEye />
                 </Link>
-                <li className="w-[38px] h-[38px] cursor-pointer bg-white flex justify-center items-center rounded-full hover:bg-[#059473] hover:text-white hover:rotate-[720deg] transition-all">
+                <li
+                  onClick={() => addCard(p._id)}
+                  className="w-[38px] h-[38px] cursor-pointer bg-white flex justify-center items-center rounded-full hover:bg-[#059473] hover:text-white hover:rotate-[720deg] transition-all"
+                >
                   <RiShoppingCartLine />
                 </li>
               </ul>
             </div>
+
             <div className="py-3 text-slate-600 px-2">
               <h2 className="font-bold">{p.name} </h2>
               <div className="flex justify-start items-center gap-3">

@@ -25,6 +25,7 @@ const Header = () => {
 
   const { categories } = useSelector((state) => state.home)
   const { userInfo } = useSelector((state) => state.auth)
+  const { cardProductCount } = useSelector((state) => state.card)
 
   const [showSidebar, setShowSidebar] = useState(true)
   const [categoryShow, setCategoryShow] = useState(true)
@@ -37,6 +38,14 @@ const Header = () => {
 
   // const user = false
   const wishlistCount = 3
+
+  const redirectCardPage = () => {
+    if (userInfo) {
+      navigate('/card')
+    } else {
+      navigate('/login')
+    }
+  }
 
   return (
     <div className="w-full bg-white">
@@ -95,12 +104,12 @@ const Header = () => {
                       {' '}
                       <FaUser />{' '}
                     </span>
-                    <span>{userInfo.name}</span>
+                    <span> {userInfo.name} </span>
                   </Link>
                 ) : (
                   <Link
-                    className="flex cursor-pointer justify-center items-center gap-2 text-sm text-black"
                     to="/login"
+                    className="flex cursor-pointer justify-center items-center gap-2 text-sm text-black"
                   >
                     <span>
                       {' '}
@@ -204,13 +213,18 @@ const Header = () => {
                         {wishlistCount}
                       </div>
                     </div>
-                    <div className="relative flex justify-center items-center cursor-pointer w-[35px] h-[35px] rounded-full bg-[#e2e2e2]">
+                    <div
+                      onClick={redirectCardPage}
+                      className="relative flex justify-center items-center cursor-pointer w-[35px] h-[35px] rounded-full bg-[#e2e2e2]"
+                    >
                       <span className="text-xl text-green-500">
                         <FaCartShopping />
                       </span>
-                      <div className="w-[20px] h-[20px] absolute bg-red-500 rounded-full text-white flex justify-center items-center -top-[3px] -right-[5px] ">
-                        {wishlistCount}
-                      </div>
+                      {cardProductCount !== 0 && (
+                        <div className="w-[20px] h-[20px] absolute bg-red-500 rounded-full text-white flex justify-center items-center -top-[3px] -right-[5px] ">
+                          {cardProductCount}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -226,7 +240,6 @@ const Header = () => {
             showSidebar ? 'invisible' : 'visible'
           } hidden md-lg:block w-screen h-screen bg-[rgba(0,0,0,0.5)] top-0 left-0 z-20 `}
         ></div>
-
         <div
           className={`w-[300px] z-[9999] transition-all duration-200 fixed ${
             showSidebar ? '-left-[300px]' : 'left-0 top-0'
@@ -383,7 +396,6 @@ const Header = () => {
                   <IoIosArrowDown />
                 </span>
               </div>
-
               <div
                 className={`${
                   categoryShow ? 'h-0' : 'h-[400px]'

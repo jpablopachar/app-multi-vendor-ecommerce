@@ -35,10 +35,10 @@ export class CardController {
     try {
       // Obtener productos del carrito y realizar la relación con los productos
       const cardProducts = await Card.aggregate([
-        { $match: { userId: Types.ObjectId(userId) } },
+        { $match: { userId: new Types.ObjectId(userId) } },
         {
           $lookup: {
-            from: 'Products',
+            from: 'products',
             localField: 'productId',
             foreignField: '_id',
             as: 'products',
@@ -51,7 +51,7 @@ export class CardController {
       let cardProductCount = 0
 
       // Separar productos fuera de stock y con stock
-      const outOfStockProduct = cardProducts.filter(
+      const outOfStockProducts = cardProducts.filter(
         (product) => product.products[0].stock < product.quantity
       )
 
@@ -60,7 +60,7 @@ export class CardController {
       )
 
       // Calcular cantidad de productos fuera de stock
-      cardProductCount = outOfStockProduct.reduce(
+      cardProductCount = outOfStockProducts.reduce(
         (acc, product) => acc + product.quantity,
         0
       )
@@ -123,7 +123,7 @@ export class CardController {
         price: calculatePrice,
         cardProductCount,
         shippingFee: 20 * productArray.length,
-        outOfStockProduct,
+        outOfStockProducts,
         buyProductItem,
       })
     } catch (error) {
