@@ -1,47 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import api from '../../api/api'
 
-export const placeOrder = createAsyncThunk(
-  'order/placeOrder',
-  async ({
-    price,
-    products,
-    shippingFee,
-    items,
-    shippingInfo,
-    userId,
-    navigate,
-  }) => {
-    try {
-      const { data } = await api.post('/home/order/place-order', {
-        price,
-        products,
-        shippingFee,
-        items,
-        shippingInfo,
-        userId,
-        navigate,
-      })
-
-      navigate('/payment', {
-        state: {
-          price: price + shippingFee,
-          orderId: data.orderId,
-          items,
-        },
-      })
-    } catch (error) {
-      console.log(error.response)
-    }
-  }
-)
-
-export const getOrders = createAsyncThunk(
-  'order/getOrders',
-  async ({ customerId, status }, { rejectWithValue, fulfillWithValue }) => {
+export const getDashboardData = createAsyncThunk(
+  'dashboard/getDashboardData',
+  async (userId, { rejectWithValue, fulfillWithValue }) => {
     try {
       const { data } = await api.get(
-        `/home/customer/get-orders/${customerId}/${status}`
+        `/home/customer/get-dashboard-data/${userId}`
       )
 
       return fulfillWithValue(data)
@@ -51,28 +16,15 @@ export const getOrders = createAsyncThunk(
   }
 )
 
-export const getOrderDetails = createAsyncThunk(
-  'order/getOrderDetails',
-  async (orderId, { rejectWithValue, fulfillWithValue }) => {
-    try {
-      const { data } = await api.get(
-        `/home/customer/get-order-details/${orderId}`
-      )
-
-      return fulfillWithValue(data)
-    } catch (error) {
-      return rejectWithValue(error.response.data)
-    }
-  }
-)
-
-export const orderReducer = createSlice({
-  name: 'order',
+export const dashboardReducer = createSlice({
+  name: 'dashboard',
   initialState: {
-    myOrders: [],
-    myOrder: {},
+    recentOrders: [],
     errorMessage: '',
     successMessage: '',
+    totalOrders: 0,
+    pendingOrders: 0,
+    cancelledOrders: 0,
   },
   reducers: {
     messageClear: (state) => {
@@ -81,15 +33,14 @@ export const orderReducer = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(getOrders.fulfilled, (state, { payload }) => {
-        state.myOrders = payload.orders
-      })
-      .addCase(getOrderDetails.fulfilled, (state, { payload }) => {
-        state.myOrder = payload.order
-      })
+    builder.addCase(getDashboardData.fulfilled, (state, { payload }) => {
+      state.totalOrders = payload.totalOrders
+      state.pendingOrders = payload.pendingOrders
+      state.cancelledOrders = payload.cancelledOrders
+      state.recentOrders = payload.recentOrders
+    })
   },
 })
 
-export const { messageClear } = orderReducer.actions
-export default orderReducer.reducer
+export const { messageClear } = dashboardReducer.actions
+export default dashboardReducer.reducer
