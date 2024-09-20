@@ -9,6 +9,7 @@ import morgan from 'morgan'
 import { PORT } from './config.js'
 import { authRouter } from './routes/auth/authRoutes.js'
 import { categoryRouter } from './routes/dashboard/categoryRoutes.js'
+import { dashboardRouter } from './routes/dashboard/dashboardRoute.js'
 import { productRouter } from './routes/dashboard/productRoutes.js'
 import { sellerRouter } from './routes/dashboard/sellerRoutes.js'
 import { cardRouter } from './routes/home/cardRoutes.js'
@@ -40,6 +41,7 @@ app.use('/api/home', homeRouter)
 app.use('/api/customer', customerAuthRouter)
 app.use('/api/home/product', cardRouter)
 app.use('/api', orderRouter)
+app.use('/api', dashboardRouter)
 
 dbConnect().then(() => {
   app.listen(PORT, () => {

@@ -3,17 +3,24 @@
 import { v2 as cloudinary } from 'cloudinary'
 import formidable from 'formidable'
 import { Types } from 'mongoose'
-import AuthorOrders from '../../models/author-orders'
-import Banner from '../../models/banner'
-import AdminSellerMessage from '../../models/chat/admin-seller-message'
-import SellerCustomerMessage from '../../models/chat/seller-customer-message'
-import Customer from '../../models/customer'
-import CustomerOrders from '../../models/customer-orders'
-import Product from '../../models/product'
-import Seller from '../../models/seller'
-import SellerWallets from '../../models/seller-wallets'
-import ShopWallets from '../../models/shop-wallets'
-import { responseReturn } from '../../utils/response'
+import AuthorOrders from '../../models/author-orders.js'
+import Banner from '../../models/banner.js'
+import AdminSellerMessage from '../../models/chat/admin-seller-message.js'
+import SellerCustomerMessage from '../../models/chat/seller-customer-message.js'
+import CustomerOrders from '../../models/customer-orders.js'
+import Customer from '../../models/customer.js'
+import Product from '../../models/product.js'
+import SellerWallets from '../../models/seller-wallets.js'
+import Seller from '../../models/seller.js'
+import ShopWallets from '../../models/shop-wallets.js'
+import { responseReturn } from '../../utils/response.js'
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
+  secure: true,
+})
 
 export class DashboardController {
   getAdminDashboardData = async (req, res) => {
@@ -105,29 +112,62 @@ export class DashboardController {
     }
   }
 
+  getBanners = async (req, res) => {
+    try {
+      const banners = await Banner.aggregate([{ $sample: { size: 5 } }])
+
+      responseReturn(res, 200, { banners })
+    } catch (error) {
+      console.log('Error in getBanners', error)
+
+      responseReturn(res, 500, { error: 'Internal server error' })
+    }
+  }
+
+  getBanner = async (req, res) => {
+    const { productId } = req.params
+
+    try {
+      const banner = await Banner.findOne({
+        productId: new Types.ObjectId(productId),
+      })
+
+      responseReturn(res, 200, { banner })
+    } catch (error) {
+      console.log('Error in getBanner', error)
+
+      responseReturn(res, 500, { error: 'Internal server error' })
+    }
+  }
+
   addBanner = async (req, res) => {
     const form = formidable({ multiples: true })
 
     form.parse(req, async (err, field, files) => {
-      const { productId } = field
-      const { mainban } = files
+      if (err) return responseReturn(res, 500, { error: 'Error parsing form' })
 
-      cloudinary.config({
-        cloud_name: process.env.CLOUD_NAME,
-        api_key: process.env.CLOUD_API_KEY,
-        api_secret: process.env.CLOUD_API_SECRET,
-        secure: true,
-      })
+      const { productId } = field
+      const mainban = files.mainban?.[0]
+
+      if (!productId || !mainban?.filepath)
+        return responseReturn(res, 400, {
+          error: 'Product ID or banner image missing',
+        })
 
       try {
-        const { slug } = Product.findById(productId)
+        const product = await Product.findById(productId)
+
+        if (!product)
+          return responseReturn(res, 404, { error: 'Product not found' })
+
         const result = await cloudinary.uploader.upload(mainban[0].filepath, {
           folder: 'banners',
         })
+
         const banner = await Banner.create({
           productId,
           banner: result.url,
-          link: slug,
+          link: product.slug,
         })
 
         responseReturn(res, 200, {
@@ -135,7 +175,59 @@ export class DashboardController {
           banner,
         })
       } catch (error) {
-        responseReturn(res, 500, { error: error.message })
+        console.log('Error in addBanner', error)
+
+        responseReturn(res, 500, { error: 'Internal server error' })
+      }
+    })
+  }
+
+  updateBanner = async (req, res) => {
+    const { bannerId } = req.params
+
+    if (!bannerId)
+      return responseReturn(res, 400, { error: 'bannerId is required' })
+
+    const form = formidable({})
+
+    form.parse(req, async (err, _, files) => {
+      if (err) return responseReturn(res, 500, { error: 'Error parsing form' })
+
+      const mainban = files.mainban?.[0]
+
+      if (!mainban?.filepath)
+        return responseReturn(res, 400, {
+          error: 'Banner image missing',
+        })
+
+      try {
+        let banner = await Banner.findById(bannerId)
+
+        if (!banner)
+          return responseReturn(res, 404, { error: 'Banner not found' })
+
+        const imageName = path.basename(banner.banner).split('.')[0]
+
+        await cloudinary.uploader.destroy(imageName)
+
+        const { url } = await cloudinary.uploader.upload(mainban.filepath, {
+          folder: 'banners',
+        })
+
+        banner = await Banner.findByIdAndUpdate(
+          bannerId,
+          { banner: url },
+          { new: true }
+        )
+
+        responseReturn(res, 200, {
+          message: 'Banner updated successfully',
+          banner,
+        })
+      } catch (error) {
+        console.log('Error in updateBanner', error)
+
+        responseReturn(res, 500, { error: 'Internal server error' })
       }
     })
   }
