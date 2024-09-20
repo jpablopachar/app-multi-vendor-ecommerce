@@ -22,7 +22,7 @@ paymentRouter.put(
 paymentRouter.get(
   '/seller-payment-details/:sellerId',
   authMiddleware,
-  paymentController.activeStripeConnectAccount
+  paymentController.getSellerPaymentDetails
 )
 
 paymentRouter.post(
