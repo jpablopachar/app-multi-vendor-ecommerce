@@ -16,6 +16,7 @@ import { cardRouter } from './routes/home/cardRoutes.js'
 import { customerAuthRouter } from './routes/home/customerAuthRoutes.js'
 import { homeRouter } from './routes/home/homeRoutes.js'
 import { orderRouter } from './routes/order/orderRoutes.js'
+import { paymentRouter } from './routes/payment/payment.js'
 import { dbConnect } from './utils/db.js'
 
 // import { swaggerDocs } from './routes/swagger.js'
@@ -42,6 +43,7 @@ app.use('/api/customer', customerAuthRouter)
 app.use('/api/home/product', cardRouter)
 app.use('/api', orderRouter)
 app.use('/api', dashboardRouter)
+app.use('/api/payment', paymentRouter)
 
 dbConnect().then(() => {
   app.listen(PORT, () => {
