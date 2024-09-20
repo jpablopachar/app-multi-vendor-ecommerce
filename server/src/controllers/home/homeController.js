@@ -107,4 +107,41 @@ export class HomeController {
       console.error(error.message)
     }
   }
+
+  productDetails = async (req, res) => {
+    const { slug } = req.params;
+
+    if (!slug) {
+      return responseReturn(res, 400, { error: 'Product slug is required' });
+    }
+
+    try {
+      const product = await Product.findOne({ slug });
+
+      if (!product) {
+        return responseReturn(res, 404, { error: 'Product not found' });
+      }
+
+      const [relatedProducts, moreProducts] = await Promise.all([
+        Product.find({
+          _id: { $ne: product.id },
+          category: product.category,
+        }).limit(2),
+
+        Product.find({
+          _id: { $ne: product.id },
+          sellerId: product.sellerId,
+        }).limit(3),
+      ]);
+
+      return responseReturn(res, 200, {
+        product,
+        relatedProducts,
+        moreProducts,
+      });
+    } catch (error) {
+      console.error('Error in productDetails:', error);
+      return responseReturn(res, 500, { error: 'Internal server error' });
+    }
+  }
 }
