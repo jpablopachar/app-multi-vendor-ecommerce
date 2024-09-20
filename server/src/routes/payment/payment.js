@@ -26,9 +26,9 @@ paymentRouter.get(
 )
 
 paymentRouter.post(
-  '/withdrow-request',
+  '/withdraw-request',
   authMiddleware,
-  paymentController.withdrowRequest
+  paymentController.withdrawRequest
 )
 
 paymentRouter.get(

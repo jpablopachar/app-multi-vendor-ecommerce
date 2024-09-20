@@ -109,7 +109,7 @@ export class PaymentController {
     }
   }
 
-  withdrowRequest = async (req, res) => {
+  withdrawRequest = async (req, res) => {
     const { amount, sellerId } = req.body
 
     if (!amount || !sellerId) {
@@ -127,17 +127,17 @@ export class PaymentController {
     }
 
     try {
-      const withdrowalRequest = await Withdrow.create({
+      const withdrawalRequest = await Withdraw.create({
         sellerId,
         amount: parsedAmount,
       })
 
       return responseReturn(res, 200, {
-        withdrowalRequest,
+        withdrawalRequest,
         message: 'Withdrawal request created successfully',
       })
     } catch (error) {
-      console.error('Error in withdrowRequest:', error)
+      console.error('Error in withdrawRequest:', error)
 
       return responseReturn(res, 500, { error: 'Internal server error' })
     }
@@ -145,9 +145,9 @@ export class PaymentController {
 
   getPaymentRequest = async (_, res) => {
     try {
-      const withdrowalRequest = await Withdrow.find({ status: 'pending' })
+      const withdrawalRequest = await Withdraw.find({ status: 'pending' })
 
-      return responseReturn(res, 200, { withdrowalRequest })
+      return responseReturn(res, 200, { withdrawalRequest })
     } catch (error) {
       console.error('Error in getPaymentRequest:', error)
 
@@ -164,8 +164,8 @@ export class PaymentController {
 
     try {
       const [payment, stripeInfo] = await Promise.all([
-        Withdrow.findById(paymentId),
-        Withdrow.findById(paymentId).then((payment) =>
+        Withdraw.findById(paymentId),
+        Withdraw.findById(paymentId).then((payment) =>
           Stripe.findOne({ sellerId: new Types.ObjectId(payment.sellerId) })
         ),
       ])
@@ -186,7 +186,7 @@ export class PaymentController {
         destination: stripeInfo.stripeId,
       })
 
-      await Withdrow.findByIdAndUpdate(paymentId, { status: 'success' })
+      await Withdraw.findByIdAndUpdate(paymentId, { status: 'success' })
 
       return responseReturn(res, 200, {
         message: 'Payment request confirmed successfully',
