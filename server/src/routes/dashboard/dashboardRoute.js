@@ -29,7 +29,7 @@ dashboardRouter.get(
   dashboardController.getBanner
 )
 
-dashboardRouter.update(
+dashboardRouter.put(
   '/banner/update/:bannerId',
   authMiddleware,
   dashboardController.updateBanner
