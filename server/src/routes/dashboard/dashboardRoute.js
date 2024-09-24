@@ -35,4 +35,4 @@ dashboardRouter.put(
   dashboardController.updateBanner
 )
 
-dashboardRouter.get('/banners', authMiddleware, dashboardController.getBanners)
+dashboardRouter.get('/banners', dashboardController.getBanners)
