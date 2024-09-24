@@ -22,7 +22,6 @@ const SearchProducts = () => {
   const dispatch = useDispatch()
   const {
     products,
-    categories,
     priceRange,
     latestProduct,
     totalProducts,
