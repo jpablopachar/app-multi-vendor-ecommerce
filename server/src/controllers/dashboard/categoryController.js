@@ -2,6 +2,7 @@
 
 import { v2 as cloudinary } from 'cloudinary'
 import formidable from 'formidable'
+import { promisify } from 'util'
 import Category from '../../models/category.js'
 import { responseReturn } from '../../utils/response.js'
 
@@ -12,54 +13,47 @@ cloudinary.config({
   secure: true,
 })
 
+const parseForm = promisify(formidable().parse)
+
 export class CategoryController {
   addCategory = async (req, res) => {
-    const form = formidable()
-
-    form.parse(req, async (err, fields, files) => {
-      if (err) {
-        return responseReturn(res, 400, { error: 'Error parsing the form' })
-      }
+    try {
+      const [fields, files] = await parseForm(req)
 
       const { name } = fields
       const { image } = files
 
-      if (!name || !image) {
+      if (!name || !image)
         return responseReturn(res, 400, {
           error: 'Name and image are required',
         })
-      }
 
       const slug = this._createSlug(name[0])
 
-      try {
-        const imageUrl = await this._uploadImage(image[0].filepath)
+      const imageUrl = await this._uploadImage(image[0].filepath)
 
-        if (!imageUrl) {
-          return responseReturn(res, 400, { error: 'Image upload failed' })
-        }
+      if (!imageUrl)
+        return responseReturn(res, 400, { error: 'Image upload failed' })
 
-        const category = await Category.create({
-          name: name[0].trim(),
-          slug,
-          image: imageUrl,
-        })
+      const category = await Category.create({
+        name: name[0].trim(),
+        slug,
+        image: imageUrl,
+      })
 
-        return responseReturn(res, 201, {
-          category,
-          message: 'Category added successfully',
-        })
-      } catch (error) {
-        console.error('Error in addCategory:', error)
+      return responseReturn(res, 201, {
+        category,
+        message: 'Category added successfully',
+      })
+    } catch (error) {
+      console.error('Error in addCategory:', error)
 
-        return responseReturn(res, 500, { error: 'Internal Server Error' })
-      }
-    })
+      return responseReturn(res, 500, { error: 'Error adding category' })
+    }
   }
 
   getCategories = async (req, res) => {
     const { page = 1, searchValue = '', parPage = 10 } = req.query
-
     const skipPage = (parseInt(page) - 1) * parseInt(parPage)
 
     try {
@@ -77,18 +71,13 @@ export class CategoryController {
     } catch (error) {
       console.error('Error in getCategories:', error)
 
-      return responseReturn(res, 500, { error: 'Internal server error' })
+      return responseReturn(res, 500, { error: 'Error retrieving categories' })
     }
   }
 
   updateCategory = async (req, res) => {
-    const form = formidable()
-
-    form.parse(req, async (err, fields, files) => {
-      if (err) {
-        return responseReturn(res, 400, { error: 'Error parsing the form' })
-      }
-
+    try {
+      const [fields, files] = await parseForm(req)
       const { name } = fields
       const { image } = files
       const { id } = req.params
@@ -97,39 +86,34 @@ export class CategoryController {
         return responseReturn(res, 400, { error: 'Name is required' })
       }
 
-      // name = name[0].trim()
       const slug = this._createSlug(name[0])
+      const updateData = { name: name[0].trim(), slug }
 
-      try {
-        const updateData = { name: name[0].trim(), slug }
+      if (image) {
+        const imageUrl = await this._uploadImage(image[0].filepath)
 
-        if (image) {
-          const imageUrl = await this._uploadImage(image[0].filepath)
+        if (!imageUrl)
+          return responseReturn(res, 400, { error: 'Image upload failed' })
 
-          if (imageUrl) {
-            updateData.image = imageUrl
-          } else {
-            return responseReturn(res, 400, { error: 'Image upload failed' })
-          }
-        }
-
-        const category = await Category.findByIdAndUpdate(id, updateData, {
-          new: true,
-        })
-
-        if (!category)
-          return responseReturn(res, 404, { error: 'Category not found' })
-
-        return responseReturn(res, 200, {
-          category,
-          message: 'Category updated successfully',
-        })
-      } catch (error) {
-        console.error('Error in updateCategory:', error)
-
-        return responseReturn(res, 500, { error: 'Internal server error' })
+        updateData.image = imageUrl
       }
-    })
+
+      const category = await Category.findByIdAndUpdate(id, updateData, {
+        new: true,
+      })
+
+      if (!category)
+        return responseReturn(res, 404, { error: 'Category not found' })
+
+      return responseReturn(res, 200, {
+        category,
+        message: 'Category updated successfully',
+      })
+    } catch (error) {
+      console.error('Error in updateCategory:', error)
+
+      return responseReturn(res, 500, { error: 'Error updating category' })
+    }
   }
 
   deleteCategory = async (req, res) => {
@@ -138,9 +122,8 @@ export class CategoryController {
     try {
       const category = await Category.findByIdAndDelete(id)
 
-      if (!category) {
+      if (!category)
         return responseReturn(res, 404, { error: 'Category not found' })
-      }
 
       return responseReturn(res, 200, {
         message: 'Category deleted successfully',
@@ -148,19 +131,25 @@ export class CategoryController {
     } catch (error) {
       console.error('Error in deleteCategory:', error)
 
-      return responseReturn(res, 500, { error: 'Internal server error' })
+      return responseReturn(res, 500, { error: 'Error deleting category' })
     }
   }
 
   _createSlug = (name) => {
-    return name.trim().split(' ').join('-').toLowerCase()
+    return name.trim().toLowerCase().split(' ').join('-')
   }
 
   _uploadImage = async (filepath) => {
-    const result = await cloudinary.uploader.upload(filepath, {
-      folder: 'categories',
-    })
+    try {
+      const result = await cloudinary.uploader.upload(filepath, {
+        folder: 'categories',
+      })
 
-    return result.url
+      return result.url
+    } catch (error) {
+      console.error('Error uploading image:', error)
+
+      return null
+    }
   }
 }
