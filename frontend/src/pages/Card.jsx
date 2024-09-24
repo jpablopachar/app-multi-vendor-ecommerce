@@ -36,10 +36,10 @@ const Card = () => {
   const redirect = () => {
     navigate('/shipping', {
       state: {
-        products: [],
-        price: 500,
-        shippingFee: 40,
-        items: 2,
+        products: cardProducts,
+        price,
+        shippingFee,
+        items: buyProductItem,
       },
     })
   }

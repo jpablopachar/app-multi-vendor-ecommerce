@@ -1,7 +1,8 @@
+import { useSelector } from 'react-redux'
 import { Navigate, Outlet } from 'react-router-dom'
 
 const ProtectUser = () => {
-  const userInfo = true
+  const { userInfo } = useSelector(state => state.auth)
 
   if (userInfo) {
     return <Outlet />

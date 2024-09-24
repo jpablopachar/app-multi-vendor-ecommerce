@@ -15,7 +15,7 @@ import ShopProducts from '../components/products/ShopProducts'
 import { productPriceRange, queryProducts } from '../store/reducers/homeReducer'
 
 const CategoryShop = () => {
-  let [searchParams, setSearchParams] = useSearchParams()
+  let [searchParams] = useSearchParams()
 
   const category = searchParams.get('category')
 
@@ -23,7 +23,6 @@ const CategoryShop = () => {
 
   const {
     products,
-    categories,
     priceRange,
     latestProduct,
     totalProducts,

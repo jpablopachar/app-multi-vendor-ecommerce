@@ -25,7 +25,7 @@ const ConfirmOrder = () => {
     if (!clientSecret) return
 
     stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
-      switch ((paymentIntent, status)) {
+      switch (paymentIntent.status) {
         case 'succeeded':
           setMessage('succeeded')
           break
@@ -56,7 +56,7 @@ const ConfirmOrder = () => {
 
     if (orderId) {
       try {
-        await axios.get(`http://localhost:5000/api/order/confirm/${orderId}`)
+        await axios.get(`http://localhost:3000/api/order/confirm/${orderId}`)
 
         localStorage.removeItem('orderId')
 
