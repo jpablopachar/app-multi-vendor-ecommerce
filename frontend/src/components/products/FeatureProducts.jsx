@@ -4,7 +4,11 @@ import { FaEye, FaRegHeart } from 'react-icons/fa'
 import { RiShoppingCartLine } from 'react-icons/ri'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
-import { addToCard, messageClear } from '../../store/reducers/cardReducer'
+import {
+  addToCard,
+  addToWishList,
+  messageClear,
+} from '../../store/reducers/cardReducer'
 import Rating from '../Rating'
 
 const FeatureProducts = ({ products }) => {
@@ -42,6 +46,22 @@ const FeatureProducts = ({ products }) => {
       dispatch(messageClear())
     }
   }, [successMessage, errorMessage])
+
+  const addWishlist = (pro) => {
+    dispatch(
+      addToWishList({
+        userId: userInfo.id,
+        productId: pro._id,
+        name: pro.name,
+        price: pro.price,
+        images: pro.images[0],
+        discount: pro.discount,
+        rating: pro.rating,
+        slug: pro.slug,
+      })
+    )
+  }
+
   return (
     <div className="w-[85%] flex flex-wrap mx-auto">
       <div className="w-full">
@@ -70,11 +90,14 @@ const FeatureProducts = ({ products }) => {
                 alt=""
               />
               <ul className="flex transition-all duration-700 -bottom-10 justify-center items-center gap-2 absolute w-full group-hover:bottom-3">
-                <li className="w-[38px] h-[38px] cursor-pointer bg-white flex justify-center items-center rounded-full hover:bg-[#059473] hover:text-white hover:rotate-[720deg] transition-all">
+                <li
+                  onClick={() => addWishlist(p)}
+                  className="w-[38px] h-[38px] cursor-pointer bg-white flex justify-center items-center rounded-full hover:bg-[#059473] hover:text-white hover:rotate-[720deg] transition-all"
+                >
                   <FaRegHeart />
                 </li>
                 <Link
-                  to="/product/details/new"
+                  to={`/product/details/${p.slug}`}
                   className="w-[38px] h-[38px] cursor-pointer bg-white flex justify-center items-center rounded-full hover:bg-[#059473] hover:text-white hover:rotate-[720deg] transition-all"
                 >
                   <FaEye />
@@ -87,7 +110,6 @@ const FeatureProducts = ({ products }) => {
                 </li>
               </ul>
             </div>
-
             <div className="py-3 text-slate-600 px-2">
               <h2 className="font-bold">{p.name} </h2>
               <div className="flex justify-start items-center gap-3">
