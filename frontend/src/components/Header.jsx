@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   FaFacebookF,
   FaGithub,
@@ -15,10 +15,16 @@ import {
   IoMdPhonePortrait,
 } from 'react-icons/io'
 import { MdEmail } from 'react-icons/md'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import {
+  getCardProducts,
+  getWishListProducts,
+} from '../store/reducers/cardReducer'
 
 const Header = () => {
+  const dispatch = useDispatch()
+
   const navigate = useNavigate()
 
   const { pathname } = useLocation()
@@ -46,6 +52,13 @@ const Header = () => {
       navigate('/login')
     }
   }
+
+  useEffect(() => {
+    if (userInfo) {
+      dispatch(getCardProducts(userInfo.id))
+      dispatch(getWishListProducts(userInfo.id))
+    }
+  }, [userInfo])
 
   return (
     <div className="w-full bg-white">
@@ -205,13 +218,20 @@ const Header = () => {
                 </ul>
                 <div className="flex md-lg:hidden justify-center items-center gap-5">
                   <div className="flex justify-center gap-5">
-                    <div className="relative flex justify-center items-center cursor-pointer w-[35px] h-[35px] rounded-full bg-[#e2e2e2]">
+                    <div
+                      onClick={() =>
+                        navigate(userInfo ? '/dashboard/my-wishlist' : '/login')
+                      }
+                      className="relative flex justify-center items-center cursor-pointer w-[35px] h-[35px] rounded-full bg-[#e2e2e2]"
+                    >
                       <span className="text-xl text-green-500">
                         <FaHeart />
                       </span>
-                      <div className="w-[20px] h-[20px] absolute bg-red-500 rounded-full text-white flex justify-center items-center -top-[3px] -right-[5px] ">
-                        {wishlistCount}
-                      </div>
+                      {wishlistCount !== 0 && (
+                        <div className="w-[20px] h-[20px] absolute bg-red-500 rounded-full text-white flex justify-center items-center -top-[3px] -right-[5px] ">
+                          {wishlistCount}
+                        </div>
+                      )}
                     </div>
                     <div
                       onClick={redirectCardPage}
