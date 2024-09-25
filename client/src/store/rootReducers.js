@@ -3,6 +3,7 @@ import bannerReducer from "./reducers/bannerReducer"
 import categoryReducer from "./reducers/categoryReducer"
 import dashboardReducer from "./reducers/dashboardReducer"
 import orderReducer from "./reducers/orderReducer"
+import paymentReducer from "./reducers/paymentReducer"
 import productReducer from "./reducers/productReducer"
 import sellerReducer from "./reducers/sellerReducer"
 
@@ -12,6 +13,7 @@ const rootReducer = {
   category: categoryReducer,
   dashboard: dashboardReducer,
   order: orderReducer,
+  payment: paymentReducer,
   product: productReducer,
   seller: sellerReducer,
 }

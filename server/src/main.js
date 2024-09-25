@@ -16,7 +16,7 @@ import { cardRouter } from './routes/home/cardRoutes.js'
 import { customerAuthRouter } from './routes/home/customerAuthRoutes.js'
 import { homeRouter } from './routes/home/homeRoutes.js'
 import { orderRouter } from './routes/order/orderRoutes.js'
-import { paymentRouter } from './routes/payment/payment.js'
+import { paymentRouter } from './routes/payment/paymentRoutes.js'
 import { dbConnect } from './utils/db.js'
 
 // import { swaggerDocs } from './routes/swagger.js'
