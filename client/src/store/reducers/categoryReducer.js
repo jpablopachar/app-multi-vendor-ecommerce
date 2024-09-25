@@ -42,6 +42,40 @@ export const getCategories = createAsyncThunk(
   }
 )
 
+export const updateCategory = createAsyncThunk(
+  'category/updateCategory',
+  async ({ id, name, image }, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const formData = new FormData()
+
+      formData.append('name', name)
+
+      if (image) formData.append('image', image)
+
+      const { data } = await api.put(`/category-update/${id}`, formData, {
+        withCredentials: true,
+      })
+
+      return fulfillWithValue(data)
+    } catch (error) {
+      return rejectWithValue(error.response.data)
+    }
+  }
+)
+
+export const deleteCategory = createAsyncThunk(
+  'category/deleteCategory',
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await api.delete(`/category/${id}`)
+
+      return res.data
+    } catch (error) {
+      return rejectWithValue(error.response.data.message)
+    }
+  }
+)
+
 export const categoryReducer = createSlice({
   name: 'category',
   initialState: {
@@ -73,6 +107,29 @@ export const categoryReducer = createSlice({
       .addCase(getCategories.fulfilled, (state, { payload }) => {
         state.total = payload.total
         state.categories = payload.categories
+      })
+      .addCase(updateCategory.rejected, (state, { payload }) => {
+        state.loader = false
+        state.errorMessage = payload.error
+      })
+      .addCase(updateCategory.fulfilled, (state, { payload }) => {
+        state.loader = false
+        state.successMessage = payload.message
+
+        const index = state.categories.findIndex(
+          (category) => category._id === payload.category._id
+        )
+
+        if (index !== -1) state.categories[index] = payload.category
+      })
+      .addCase(deleteCategory.rejected, (state, { payload }) => {
+        state.errorMessage = payload
+      })
+      .addCase(deleteCategory.fulfilled, (state, action) => {
+        state.successMessage = action.payload.message
+        state.categories = state.categories.filter(
+          (category) => category._id !== action.meta.arg
+        )
       })
   },
 })
