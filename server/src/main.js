@@ -14,6 +14,7 @@ import {
   PORT,
 } from './config.js'
 import { authRouter } from './routes/auth/authRoutes.js'
+import { chatRouter } from './routes/chat/chatRoutes.js'
 import { categoryRouter } from './routes/dashboard/categoryRoutes.js'
 import { dashboardRouter } from './routes/dashboard/dashboardRoute.js'
 import { productRouter } from './routes/dashboard/productRoutes.js'
@@ -44,6 +45,7 @@ app.use(cookieParser())
 app.use(morgan('dev'))
 app.use(cors(corsOptions))
 
+app.use('/api/chat', chatRouter)
 app.use('/api/auth', authRouter)
 app.use('/api', categoryRouter)
 app.use('/api', productRouter)

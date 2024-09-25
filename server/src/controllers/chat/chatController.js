@@ -18,24 +18,23 @@ export class ChatController {
 
     try {
       if (sellerId === '') {
-        const MyFriends = await SellerCustomer.findOne({ myId: userId })
+        const myFriends = await SellerCustomer.findOne({ myId: userId })
 
-        responseReturn(res, 200, { myFriends: MyFriends.myFriends })
+        responseReturn(res, 200, { myFriends: myFriends.myFriends })
       }
 
-      const seller = await Seller.findById(sellerId)
+      const [seller, user] = await Promise.all([
+        Seller.findById(sellerId),
+        Customer.findById(userId),
+      ])
 
       if (!seller) responseReturn(res, 404, { error: 'Seller not found' })
-
-      const user = await Customer.findById(userId)
 
       if (!user) responseReturn(res, 404, { error: 'User not found' })
 
       const checkSeller = await SellerCustomer.findOne({
-        $and: [
-          { myId: { $eq: userId } },
-          { myFriends: { $elemMatch: { fdIn: sellerId } } },
-        ],
+        myId: userId,
+        'myFriends.fdIn': sellerId,
       })
 
       if (!checkSeller) {
@@ -54,10 +53,8 @@ export class ChatController {
       }
 
       const checkCustomer = await SellerCustomer.findOne({
-        $and: [
-          { myId: { $eq: userId } },
-          { myFriends: { $elemMatch: { fdIn: userId } } },
-        ],
+        myId: sellerId,
+        'myFriends.fdIn': userId,
       })
 
       if (!checkCustomer) {
@@ -75,30 +72,20 @@ export class ChatController {
         )
       }
 
-      const messages = await SellerCustomer.find({
+      const messages = await SellerCustomerMessage.find({
         $or: [
-          {
-            $and: [
-              { receiverId: { $eq: sellerId } },
-              { senderId: { $eq: userId } },
-            ],
-          },
-          {
-            $and: [
-              { receiverId: { $eq: userId } },
-              { senderId: { $eq: sellerId } },
-            ],
-          },
+          { receiverId: sellerId, senderId: userId },
+          { receiverId: userId, senderId: sellerId },
         ],
       })
 
-      const MyFriends = await SellerCustomer.findOne({ myId: userId })
+      const myFriends = await SellerCustomer.findOne({ myId: userId })
 
-      const currentFd = MyFriends.myFriends.find((fd) => fd.fdIn === sellerId)
+      const currentFd = myFriends.myFriends.find((fd) => fd.fdIn === sellerId)
 
       responseReturn(res, 200, {
         messages,
-        myFriends: MyFriends.myFriends,
+        myFriends: myFriends.myFriends,
         currentFd,
       })
     } catch (error) {
@@ -117,45 +104,15 @@ export class ChatController {
       })
 
     try {
-      const message = SellerCustomerMessage.create({
+      const message = await SellerCustomerMessage.create({
         senderName: name,
         senderId: userId,
         receiverId: sellerId,
         message: text,
       })
 
-      const data = await SellerCustomer.findOne({ myId: userId })
-
-      let myFriends = data.myFriends
-      let index = myFriends.findIndex((fd) => fd.fdIn === sellerId)
-
-      while (index > 0) {
-        let temp = myFriends[index]
-
-        myFriends[index] = myFriends[index - 1]
-        myFriends[index - 1] = temp
-        index--
-      }
-
-      await SellerCustomer.updateOne({ myId: userId }, { myFriends })
-
-      const data1 = await SellerCustomer.findOne({ myId: sellerId })
-
-      let myFriends1 = data1.myFriends
-      let index1 = myFriends1.findIndex((fd) => fd.fdIn === userId)
-
-      while (index1 > 0) {
-        let temp1 = myFriends1[index1]
-
-        myFriends1[index1] = myFriends1[index1 - 1]
-        myFriends1[index1 - 1] = temp1
-        index1--
-      }
-
-      await SellerCustomer.updateOne(
-        { myId: sellerId },
-        { myFriends: myFriends1 }
-      )
+      await this._updateFriendPosition(userId, sellerId)
+      await this._updateFriendPosition(sellerId, userId)
 
       responseReturn(res, 200, { message })
     } catch (error) {
@@ -191,18 +148,8 @@ export class ChatController {
     try {
       const messages = await SellerCustomerMessage.find({
         $or: [
-          {
-            $and: [
-              { receiverId: { $eq: customerId } },
-              { senderId: { $eq: id } },
-            ],
-          },
-          {
-            $and: [
-              { receiverId: { $eq: id } },
-              { senderId: { $eq: customerId } },
-            ],
-          },
+          { receiverId: customerId, senderId: id },
+          { receiverId: id, senderId: customerId },
         ],
       })
 
@@ -225,45 +172,15 @@ export class ChatController {
       })
 
     try {
-      const message = SellerCustomerMessage.create({
+      const message = await SellerCustomerMessage.create({
         senderName: name,
         senderId,
         receiverId,
         message: text,
       })
 
-      const data = await SellerCustomer.findOne({ myId: senderId })
-
-      let myFriends = data.myFriends
-      let index = myFriends.findIndex((fd) => fd.fdIn === receiverId)
-
-      while (index > 0) {
-        let temp = myFriends[index]
-
-        myFriends[index] = myFriends[index - 1]
-        myFriends[index - 1] = temp
-        index--
-      }
-
-      await SellerCustomer.updateOne({ myId: senderId }, { myFriends })
-
-      const data1 = await SellerCustomer.findOne({ myId: receiverId })
-
-      let myFriends1 = data1.myFriends
-      let index1 = myFriends1.findIndex((fd) => fd.fdIn === senderId)
-
-      while (index1 > 0) {
-        let temp1 = myFriends1[index1]
-
-        myFriends1[index1] = myFriends1[index1 - 1]
-        myFriends1[index1 - 1] = temp1
-        index1--
-      }
-
-      await SellerCustomer.updateOne(
-        { myId: receiverId },
-        { myFriends: myFriends1 }
-      )
+      await this._updateFriendPosition(senderId, receiverId)
+      await this._updateFriendPosition(receiverId, senderId)
 
       responseReturn(res, 200, { message })
     } catch (error) {
@@ -320,24 +237,12 @@ export class ChatController {
     try {
       const messages = await AdminSellerMessage.find({
         $or: [
-          {
-            $and: [
-              { receiverId: { $eq: receiverId } },
-              { senderId: { $eq: id } },
-            ],
-          },
-          {
-            $and: [
-              { receiverId: { $eq: id } },
-              { senderId: { $eq: receiverId } },
-            ],
-          },
+          { receiverId: { $eq: receiverId }, senderId: { $eq: id } },
+          { receiverId: { $eq: id }, senderId: { $eq: receiverId } },
         ],
       })
 
-      let currentSeller = {}
-
-      if (receiverId) currentSeller = await Seller.findById(receiverId)
+      const currentSeller = receiverId ? await Seller.findById(receiverId) : {}
 
       responseReturn(res, 200, { messages, currentSeller })
     } catch (error) {
@@ -349,24 +254,13 @@ export class ChatController {
 
   getSellerMessages = async (req, res) => {
     const receiverId = ''
-
     const { id } = req
 
     try {
       const messages = await AdminSellerMessage.find({
         $or: [
-          {
-            $and: [
-              { receiverId: { $eq: receiverId } },
-              { senderId: { $eq: id } },
-            ],
-          },
-          {
-            $and: [
-              { receiverId: { $eq: id } },
-              { senderId: { $eq: receiverId } },
-            ],
-          },
+          { receiverId: { $eq: receiverId }, senderId: { $eq: id } },
+          { receiverId: { $eq: id }, senderId: { $eq: receiverId } },
         ],
       })
 
@@ -376,5 +270,22 @@ export class ChatController {
 
       responseReturn(res, 500, { error: 'Error in getSellerMessages' })
     }
+  }
+
+  _updateFriendPosition = async (userId, friendId) => {
+    const data = await SellerCustomer.findOne({ myId: userId })
+
+    let myFriends = data.myFriends
+    let index = myFriends.findIndex((fd) => fd.fdIn === friendId)
+
+    while (index > 0) {
+      let temp = myFriends[index]
+
+      myFriends[index] = myFriends[index - 1]
+      myFriends[index - 1] = temp
+      index--
+    }
+
+    await SellerCustomer.updateOne({ myId: userId }, { myFriends })
   }
 }
