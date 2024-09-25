@@ -24,7 +24,7 @@ export class CategoryController {
       const { image } = files
 
       if (!name || !image)
-        return responseReturn(res, 400, {
+        responseReturn(res, 400, {
           error: 'Name and image are required',
         })
 
@@ -32,8 +32,7 @@ export class CategoryController {
 
       const imageUrl = await this._uploadImage(image[0].filepath)
 
-      if (!imageUrl)
-        return responseReturn(res, 400, { error: 'Image upload failed' })
+      if (!imageUrl) responseReturn(res, 400, { error: 'Image upload failed' })
 
       const category = await Category.create({
         name: name[0].trim(),
@@ -41,14 +40,14 @@ export class CategoryController {
         image: imageUrl,
       })
 
-      return responseReturn(res, 201, {
+      responseReturn(res, 201, {
         category,
         message: 'Category added successfully',
       })
     } catch (error) {
       console.error('Error in addCategory:', error)
 
-      return responseReturn(res, 500, { error: 'Error adding category' })
+      responseReturn(res, 500, { error: 'Error adding category' })
     }
   }
 
@@ -67,11 +66,11 @@ export class CategoryController {
         Category.countDocuments(query),
       ])
 
-      return responseReturn(res, 200, { categories, total })
+      responseReturn(res, 200, { categories, total })
     } catch (error) {
       console.error('Error in getCategories:', error)
 
-      return responseReturn(res, 500, { error: 'Error retrieving categories' })
+      responseReturn(res, 500, { error: 'Error retrieving categories' })
     }
   }
 
@@ -83,7 +82,7 @@ export class CategoryController {
       const { id } = req.params
 
       if (!name) {
-        return responseReturn(res, 400, { error: 'Name is required' })
+        responseReturn(res, 400, { error: 'Name is required' })
       }
 
       const slug = this._createSlug(name[0])
@@ -93,7 +92,7 @@ export class CategoryController {
         const imageUrl = await this._uploadImage(image[0].filepath)
 
         if (!imageUrl)
-          return responseReturn(res, 400, { error: 'Image upload failed' })
+          responseReturn(res, 400, { error: 'Image upload failed' })
 
         updateData.image = imageUrl
       }
@@ -102,17 +101,16 @@ export class CategoryController {
         new: true,
       })
 
-      if (!category)
-        return responseReturn(res, 404, { error: 'Category not found' })
+      if (!category) responseReturn(res, 404, { error: 'Category not found' })
 
-      return responseReturn(res, 200, {
+      responseReturn(res, 200, {
         category,
         message: 'Category updated successfully',
       })
     } catch (error) {
       console.error('Error in updateCategory:', error)
 
-      return responseReturn(res, 500, { error: 'Error updating category' })
+      responseReturn(res, 500, { error: 'Error updating category' })
     }
   }
 
@@ -122,16 +120,15 @@ export class CategoryController {
     try {
       const category = await Category.findByIdAndDelete(id)
 
-      if (!category)
-        return responseReturn(res, 404, { error: 'Category not found' })
+      if (!category) responseReturn(res, 404, { error: 'Category not found' })
 
-      return responseReturn(res, 200, {
+      responseReturn(res, 200, {
         message: 'Category deleted successfully',
       })
     } catch (error) {
       console.error('Error in deleteCategory:', error)
 
-      return responseReturn(res, 500, { error: 'Error deleting category' })
+      responseReturn(res, 500, { error: 'Error deleting category' })
     }
   }
 
