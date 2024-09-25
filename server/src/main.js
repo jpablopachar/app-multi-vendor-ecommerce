@@ -5,8 +5,14 @@ dotenv.config()
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import express from 'express'
+import { createServer } from 'http'
 import morgan from 'morgan'
-import { PORT } from './config.js'
+import {
+  CLIENT_ANGULAR_URL,
+  CLIENT_REACT_URL,
+  FRONTEND_REACT_URL,
+  PORT,
+} from './config.js'
 import { authRouter } from './routes/auth/authRoutes.js'
 import { categoryRouter } from './routes/dashboard/categoryRoutes.js'
 import { dashboardRouter } from './routes/dashboard/dashboardRoute.js'
@@ -17,16 +23,20 @@ import { customerAuthRouter } from './routes/home/customerAuthRoutes.js'
 import { homeRouter } from './routes/home/homeRoutes.js'
 import { orderRouter } from './routes/order/orderRoutes.js'
 import { paymentRouter } from './routes/payment/paymentRoutes.js'
+import { socketConnection } from './socket/index.js'
 import { dbConnect } from './utils/db.js'
 
 // import { swaggerDocs } from './routes/swagger.js'
 
 const corsOptions = {
-  origin : ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:4200'],
-  credentials: true
+  origin: [CLIENT_REACT_URL, FRONTEND_REACT_URL, CLIENT_ANGULAR_URL],
+  credentials: true,
 }
 
 const app = express()
+const server = createServer(app)
+
+socketConnection(server)
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
