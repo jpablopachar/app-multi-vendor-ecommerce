@@ -65,7 +65,7 @@ export const socketConnection = (server) => {
 
     socket.on('sendSellerMessage', (message) => {
       try {
-        const customer = findCustomer(message.receivedId)
+        const customer = findCustomer(message.receiverId)
 
         if (customer) {
           socket.to(customer.socketId).emit('sellerMessage', message)
@@ -79,7 +79,7 @@ export const socketConnection = (server) => {
 
     socket.on('sendCustomerMessage', (message) => {
       try {
-        const seller = findSeller(message.receivedId)
+        const seller = findSeller(message.receiverId)
 
         if (seller) {
           socket.to(seller.socketId).emit('customerMessage', message)
@@ -93,10 +93,10 @@ export const socketConnection = (server) => {
 
     socket.on('sendMessageAdminToSeller', (message) => {
       try {
-        const seller = findSeller(message.receivedId)
+        const seller = findSeller(message.receiverId)
 
         if (seller) {
-          socket.to(seller.socketId).emit('receivedAdminMessage', message)
+          socket.to(seller.socketId).emit('receiverAdminMessage', message)
         } else {
           console.error('Seller not found')
         }
@@ -108,7 +108,7 @@ export const socketConnection = (server) => {
     socket.on('sendMessageSellerToAdmin', (message) => {
       try {
         if (admin.socketId) {
-          socket.to(admin.socketId).emit('receivedSellerMessage', message)
+          socket.to(admin.socketId).emit('receiverSellerMessage', message)
         } else {
           console.error('Admin not connected')
         }
