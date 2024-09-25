@@ -38,7 +38,9 @@ export const profileImageUpload = createAsyncThunk(
   'auth/profileImageUpload',
   async (image, { rejectWithValue, fulfillWithValue }) => {
     try {
-      const { data } = await api.post('/auth/profile-image-upload',image,{ withCredentials: true })
+      const { data } = await api.post('/auth/profile-image-upload', image, {
+        withCredentials: true,
+      })
 
       return fulfillWithValue(data)
     } catch (error) {
@@ -51,7 +53,9 @@ export const profileInfoAdd = createAsyncThunk(
   'auth/profileInfoAdd',
   async (info, { rejectWithValue, fulfillWithValue }) => {
     try {
-      const { data } = await api.post('/auth/profile-info-add',info,{ withCredentials: true })
+      const { data } = await api.post('/auth/profile-info-add', info, {
+        withCredentials: true,
+      })
 
       return fulfillWithValue(data)
     } catch (error) {
