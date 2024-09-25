@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Outlet } from 'react-router-dom'
-import { updateSellers } from '../store/reducers/chatReducer'
+import { updateCustomer, updateSellers } from '../store/reducers/chatReducer'
 import { socket } from '../utils/utils'
 import Header from './Header'
 import Sidebar from './Sidebar'
@@ -22,9 +22,9 @@ const MainLayout = () => {
   }, [userInfo])
 
   useEffect(() => {
-    /* socket.on('activeCustomer', (customers) => {
+    socket.on('activeCustomer', (customers) => {
       dispatch(updateCustomer(customers))
-    }) */
+    })
 
     socket.on('activeSellers', (sellers) => {
       dispatch(updateSellers(sellers))

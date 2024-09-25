@@ -5,6 +5,7 @@ dotenv.config()
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import express from 'express'
+
 import { createServer } from 'http'
 import morgan from 'morgan'
 import {
@@ -58,7 +59,7 @@ app.use('/api', dashboardRouter)
 app.use('/api/payment', paymentRouter)
 
 dbConnect().then(() => {
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
     // eslint-disable-next-line no-undef
     console.log(`Server is running on http://localhost:${PORT}`)
 
