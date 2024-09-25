@@ -1,11 +1,11 @@
 /* eslint-disable no-undef */
 
-import AdminSellerMessage from '../../models/chat/admin-seller-message'
-import SellerCustomer from '../../models/chat/seller-customer'
-import SellerCustomerMessage from '../../models/chat/seller-customer-message'
-import Customer from '../../models/customer'
-import Seller from '../../models/seller'
-import { responseReturn } from '../../utils/response'
+import AdminSellerMessage from '../../models/chat/admin-seller-message.js'
+import SellerCustomerMessage from '../../models/chat/seller-customer-message.js'
+import SellerCustomer from '../../models/chat/seller-customer.js'
+import Customer from '../../models/customer.js'
+import Seller from '../../models/seller.js'
+import { responseReturn } from '../../utils/response.js'
 
 export class ChatController {
   addCustomerFriend = async (req, res) => {
