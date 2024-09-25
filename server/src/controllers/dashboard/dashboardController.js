@@ -57,7 +57,9 @@ export class DashboardController {
         totalSale: totalSale.length > 0 ? totalSale[0].totalAmount : 0,
       })
     } catch (error) {
-      responseReturn(res, 500, { error: error.message })
+      console.log('Error in getAdminDashboardData', error)
+
+      responseReturn(res, 500, { error: 'Error get admin dashboard data' })
     }
   }
 
@@ -108,7 +110,9 @@ export class DashboardController {
         totalSale: totalSale.length > 0 ? totalSale[0].totalAmount : 0,
       })
     } catch (error) {
-      responseReturn(res, 500, { error: error.message })
+      console.log('Error in getSellerDashboardData', error)
+
+      responseReturn(res, 500, { error: 'Error get seller dashboard data' })
     }
   }
 
@@ -120,7 +124,7 @@ export class DashboardController {
     } catch (error) {
       console.log('Error in getBanners', error)
 
-      responseReturn(res, 500, { error: 'Internal server error' })
+      responseReturn(res, 500, { error: 'Error get banners' })
     }
   }
 
@@ -136,7 +140,7 @@ export class DashboardController {
     } catch (error) {
       console.log('Error in getBanner', error)
 
-      responseReturn(res, 500, { error: 'Internal server error' })
+      responseReturn(res, 500, { error: 'Error get banner' })
     }
   }
 
@@ -144,21 +148,20 @@ export class DashboardController {
     const form = formidable({ multiples: true })
 
     form.parse(req, async (err, field, files) => {
-      if (err) return responseReturn(res, 500, { error: 'Error parsing form' })
+      if (err) responseReturn(res, 500, { error: 'Error parsing form' })
 
       const { productId } = field
       const mainban = files.mainban?.[0]
 
       if (!productId || !mainban?.filepath)
-        return responseReturn(res, 400, {
+        responseReturn(res, 400, {
           error: 'Product ID or banner image missing',
         })
 
       try {
         const product = await Product.findById(productId)
 
-        if (!product)
-          return responseReturn(res, 404, { error: 'Product not found' })
+        if (!product) responseReturn(res, 404, { error: 'Product not found' })
 
         const result = await cloudinary.uploader.upload(mainban[0].filepath, {
           folder: 'banners',
@@ -177,7 +180,7 @@ export class DashboardController {
       } catch (error) {
         console.log('Error in addBanner', error)
 
-        responseReturn(res, 500, { error: 'Internal server error' })
+        responseReturn(res, 500, { error: 'Error add banner' })
       }
     })
   }
@@ -185,26 +188,24 @@ export class DashboardController {
   updateBanner = async (req, res) => {
     const { bannerId } = req.params
 
-    if (!bannerId)
-      return responseReturn(res, 400, { error: 'bannerId is required' })
+    if (!bannerId) responseReturn(res, 400, { error: 'bannerId is required' })
 
     const form = formidable({})
 
     form.parse(req, async (err, _, files) => {
-      if (err) return responseReturn(res, 500, { error: 'Error parsing form' })
+      if (err) responseReturn(res, 500, { error: 'Error parsing form' })
 
       const mainban = files.mainban?.[0]
 
       if (!mainban?.filepath)
-        return responseReturn(res, 400, {
+        responseReturn(res, 400, {
           error: 'Banner image missing',
         })
 
       try {
         let banner = await Banner.findById(bannerId)
 
-        if (!banner)
-          return responseReturn(res, 404, { error: 'Banner not found' })
+        if (!banner) responseReturn(res, 404, { error: 'Banner not found' })
 
         const imageName = path.basename(banner.banner).split('.')[0]
 
@@ -227,7 +228,7 @@ export class DashboardController {
       } catch (error) {
         console.log('Error in updateBanner', error)
 
-        responseReturn(res, 500, { error: 'Internal server error' })
+        responseReturn(res, 500, { error: 'Error update banner' })
       }
     })
   }
