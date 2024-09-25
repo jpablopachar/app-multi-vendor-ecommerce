@@ -13,88 +13,80 @@ export class AuthController {
   adminLogin = async (req, res) => {
     const { email, password } = req.body
 
+    if (!email || !password)
+      responseReturn(res, 400, { error: 'Email and password required' })
+
     try {
       const admin = await Admin.findOne({ email }).select('+password')
 
-      if (admin) {
-        const match = await compare(password, admin.password)
+      if (!admin) return responseReturn(res, 404, { error: 'Email not found' })
 
-        if (match) {
-          const token = createToken({ id: admin.id, role: admin.role })
-
-          res.cookie('accessToken', token, {
-            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-          })
-
-          responseReturn(res, 200, { token, message: 'Login successful' })
-        } else {
-          responseReturn(res, 401, { error: 'Invalid password' })
-        }
-      } else {
-        responseReturn(res, 404, { error: 'Email not found' })
-      }
+      return this._handleLogin(admin, password, res)
     } catch (error) {
-      responseReturn(res, 500, { error: error.message })
+      console.error('Error in adminLogin', error)
+
+      responseReturn(res, 500, { error: 'Error logging admin' })
     }
   }
 
   sellerLogin = async (req, res) => {
     const { email, password } = req.body
 
+    if (!email || !password)
+      responseReturn(res, 400, { error: 'Email and password required' })
+
     try {
       const seller = await Seller.findOne({ email }).select('+password')
 
-      if (seller) {
-        const match = await compare(password, seller.password)
+      if (!seller) responseReturn(res, 404, { error: 'Email not found' })
 
-        if (match) {
-          const token = createToken({ id: seller.id, role: seller.role })
-
-          res.cookie('accessToken', token, {
-            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-          })
-
-          responseReturn(res, 200, { token, message: 'Login successful' })
-        } else {
-          responseReturn(res, 401, { error: 'Invalid password' })
-        }
-      } else {
-        responseReturn(res, 404, { error: 'Email not found' })
-      }
+      return this._handleLogin(seller, password, res)
     } catch (error) {
-      responseReturn(res, 500, { error: error.message })
+      console.error('Error in sellerLogin', error)
+
+      responseReturn(res, 500, { error: 'Error logging seller' })
     }
   }
 
   sellerRegister = async (req, res) => {
     const { email, name, password } = req.body
 
+    if (!email || !name || !password)
+      responseReturn(res, 400, {
+        error: 'Email, name and password are required',
+      })
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+    if (!emailRegex.test(email))
+      responseReturn(res, 400, { error: 'Invalid email' })
+
     try {
       const user = await Seller.findOne({ email })
 
-      if (user) {
-        responseReturn(res, 400, { error: 'Email already registered' })
-      } else {
-        const seller = await Seller.create({
-          name,
-          email,
-          password: await hash(password, 10),
-          method: 'local',
-          shopInfo: {},
-        })
+      if (!user) responseReturn(res, 400, { error: 'Email already registered' })
 
-        await SellerCustomers.create({ myId: seller.id })
+      const seller = await Seller.create({
+        name,
+        email,
+        password: await hash(password, 10),
+        method: 'local',
+        shopInfo: {},
+      })
 
-        const token = createToken({ id: seller.id, role: seller.role })
+      await SellerCustomers.create({ myId: seller.id })
 
-        res.cookie('accessToken', token, {
-          expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        })
+      const token = createToken({ id: seller.id, role: seller.role })
 
-        responseReturn(res, 201, { token, message: 'Register successful' })
-      }
+      res.cookie('accessToken', token, {
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      })
+
+      responseReturn(res, 201, { token, message: 'Register successful' })
     } catch {
-      responseReturn(res, 500, { error: 'Internal Server Error' })
+      console.error('Error in sellerRegister', error)
+
+      responseReturn(res, 500, { error: 'Error register seller' })
     }
   }
 
@@ -112,7 +104,9 @@ export class AuthController {
         responseReturn(res, 200, { userInfo: seller })
       }
     } catch {
-      responseReturn(res, 500, { error: 'Internal Server Error' })
+      console.error('Error in getUser', error)
+
+      responseReturn(res, 500, { error: 'Error get user' })
     }
   }
 
@@ -136,27 +130,32 @@ export class AuthController {
           folder: 'profile',
         })
 
-        if (result) {
-          await Seller.findByIdAndUpdate(id, { image: result.url })
+        if (!result) responseReturn(res, 404, { error: 'Image upload failed' })
 
-          const userInfo = await Seller.findById(id)
+        await Seller.findByIdAndUpdate(id, { image: result.url })
 
-          responseReturn(res, 201, {
-            message: 'Profile image upload successfully',
-            userInfo,
-          })
-        } else {
-          responseReturn(res, 404, { error: 'Image upload failed' })
-        }
+        const userInfo = await Seller.findById(id)
+
+        responseReturn(res, 201, {
+          message: 'Profile image upload successfully',
+          userInfo,
+        })
       } catch (error) {
-        responseReturn(res, 500, { error: error.message })
+        console.error('Error in profileImageUpload', error)
+
+        responseReturn(res, 500, { error: 'Error upload image profile' })
       }
     })
   }
 
   profileInfoAdd = async (req, res) => {
-    const { division, district, shopName, sub_district } = req.body
+    const { division, district, shopName, subDistrict } = req.body
     const { id } = req
+
+    if (!division || !district || !shopName || !subDistrict)
+      responseReturn(res, 400, {
+        error: 'Division, district, shopName and subDistrict are required',
+      })
 
     try {
       await Seller.findByIdAndUpdate(id, {
@@ -164,7 +163,7 @@ export class AuthController {
           division,
           district,
           shopName,
-          sub_district,
+          subDistrict,
         },
       })
 
@@ -175,7 +174,9 @@ export class AuthController {
         userInfo,
       })
     } catch (error) {
-      responseReturn(res, 500, { error: error.message })
+      console.error('Error in profileInfoAdd', error)
+
+      responseReturn(res, 500, { error: 'Error add info' })
     }
   }
 
@@ -184,11 +185,28 @@ export class AuthController {
       res.cookie('accessToken', null, {
         expires: new Date(Date.now()),
         httpOnly: true,
+        secure: true,
       })
 
       responseReturn(res, 200, { message: 'Logout successful' })
     } catch (error) {
-      responseReturn(res, 500, { error: error.message })
+      console.error('Error in logout', error)
+
+      responseReturn(res, 500, { error: 'Error logout' })
     }
+  }
+
+  _handleLogin = async (user, password, res) => {
+    const match = await compare(password, user.password)
+
+    if (!match) responseReturn(res, 401, { error: 'Invalid password' })
+
+    const token = createToken({ id: user.id, role: user.role })
+
+    res.cookie('accessToken', token, {
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    })
+
+    responseReturn(res, 200, { token, message: 'Login successful' })
   }
 }
