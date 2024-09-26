@@ -1,0 +1,36 @@
+name: CI/CD Server Pipeline
+
+on:
+  push:
+    branches:
+      - dev
+      - fix
+      - main
+    paths:
+      - 'server/**'
+      - 'client/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'server/**'
+      - 'client/**'
+
+jobs:
+  build_server:
+    if: |
+      contains(github.event.head_commit.message, 'server') ||
+      contains(github.ref, 'refs/heads/main') ||
+      contains(github.ref, 'refs/heads/fix') ||
+      contains(github.ref, 'refs/heads/dev')
+    runs-on: ubuntu-latest
+    name: Build and Test Server
+
+  build_client:
+    if: |
+      contains(github.event.head_commit.message, 'client') ||
+      contains(github.ref, 'refs/heads/main') ||
+      contains(github.ref, 'refs/heads/fix') ||
+      contains(github.ref, 'refs/heads/dev')
+    runs-on: ubuntu-latest
+    name: Build and Test Client
