@@ -1,10 +1,96 @@
-import { useState } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+
+import { useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
 import { FaList } from 'react-icons/fa6'
 import { IoMdClose } from 'react-icons/io'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useParams } from 'react-router-dom'
+import {
+  getCustomerMessage,
+  getCustomers,
+  messageClear,
+  sendMessage,
+  updateMessage,
+} from '../../store/reducers/chatReducer'
+import { socket } from '../../utils/utils'
 
 const SellerToCustomer = () => {
+  const scrollRef = useRef()
+
+  const { customerId } = useParams()
+
+  const dispatch = useDispatch()
+
+  const { userInfo } = useSelector((state) => state.auth)
+
+  const { customers, messages, currentCustomer, successMessage } = useSelector(
+    (state) => state.chat
+  )
+
   const [show, setShow] = useState(false)
+  const [text, setText] = useState('')
+  const [receiverMessage, setReceiverMessage] = useState('')
+
   const sellerId = 65
+
+  useEffect(() => {
+    dispatch(getCustomers(userInfo._id))
+  }, [])
+
+  useEffect(() => {
+    if (customerId) {
+      dispatch(getCustomerMessage(customerId))
+    }
+  }, [customerId])
+
+  useEffect(() => {
+    if (successMessage) {
+      socket.emit('sendSellerMessage', messages[messages.length - 1])
+
+      dispatch(messageClear())
+    }
+  }, [successMessage])
+
+  useEffect(() => {
+    socket.on('customerMessage', (msg) => {
+      setReceiverMessage(msg)
+    })
+  }, [])
+
+  useEffect(() => {
+    if (receiverMessage) {
+      if (
+        customerId === receiverMessage.senderId &&
+        userInfo._id === receiverMessage.receverId
+      ) {
+        dispatch(updateMessage(receiverMessage))
+      } else {
+        toast.success(receiverMessage.senderName + ' ' + 'Send a message')
+
+        dispatch(messageClear())
+      }
+    }
+  }, [receiverMessage])
+
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
+
+  const send = (event) => {
+    event.preventDefault()
+
+    dispatch(
+      sendMessage({
+        senderId: userInfo._id,
+        receiverId: customerId,
+        text,
+        name: userInfo?.shopInfo?.shopName,
+      })
+    )
+
+    setText('')
+  }
 
   return (
     <div className="px-2 lg:px-7 py-5">
@@ -25,59 +111,28 @@ const SellerToCustomer = () => {
                   <IoMdClose />{' '}
                 </span>
               </div>
-              <div
-                className={`h-[60px] flex justify-start gap-2 items-center text-white px-2 py-2 rounded-md cursor-pointer bg-[#8288ed] `}
-              >
-                <div className="relative">
-                  <img
-                    className="w-[38px] h-[38px] border-white border-2 max-w-[38px] p-[2px] rounded-full"
-                    src="http://localhost:5173/src/assets/images/admin.jpg"
-                    alt=""
-                  />
-                  <div className="w-[10px] h-[10px] bg-green-500 rounded-full absolute right-0 bottom-0"></div>
-                </div>
+              {customers.map((c, i) => (
+                <Link
+                  key={i}
+                  to={`/seller/dashboard/chat-customer/${c.fdId}`}
+                  className={`h-[60px] flex justify-start gap-2 items-center text-white px-2 py-2 rounded-md cursor-pointer bg-[#8288ed] `}
+                >
+                  <div className="relative">
+                    <img
+                      className="w-[38px] h-[38px] border-white border-2 max-w-[38px] p-[2px] rounded-full"
+                      src="http://localhost:5173/src/assets/images/admin.jpg"
+                      alt=""
+                    />
+                    <div className="w-[10px] h-[10px] bg-green-500 rounded-full absolute right-0 bottom-0"></div>
+                  </div>
 
-                <div className="flex justify-center items-start flex-col w-full">
-                  <div className="flex justify-between items-center w-full">
-                    <h2 className="text-base font-semibold">Kazi Ariyan</h2>
+                  <div className="flex justify-center items-start flex-col w-full">
+                    <div className="flex justify-between items-center w-full">
+                      <h2 className="text-base font-semibold">{c.name}</h2>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div
-                className={`h-[60px] flex justify-start gap-2 items-center text-white px-2 py-2 rounded-sm cursor-pointer`}
-              >
-                <div className="relative">
-                  <img
-                    className="w-[38px] h-[38px] border-white border-2 max-w-[38px] p-[2px] rounded-full"
-                    src="http://localhost:5173/src/assets/images/admin.jpg"
-                    alt=""
-                  />
-                  <div className="w-[10px] h-[10px] bg-green-500 rounded-full absolute right-0 bottom-0"></div>
-                </div>
-
-                <div className="flex justify-center items-start flex-col w-full">
-                  <div className="flex justify-between items-center w-full">
-                    <h2 className="text-base font-semibold">Jhon</h2>
-                  </div>
-                </div>
-              </div>
-              <div
-                className={`h-[60px] flex justify-start gap-2 items-center text-white px-2 py-2 rounded-sm cursor-pointer`}
-              >
-                <div className="relative">
-                  <img
-                    className="w-[38px] h-[38px] border-white border-2 max-w-[38px] p-[2px] rounded-full"
-                    src="http://localhost:5173/src/assets/images/admin.jpg"
-                    alt=""
-                  />
-                  <div className="w-[10px] h-[10px] bg-green-500 rounded-full absolute right-0 bottom-0"></div>
-                </div>
-                <div className="flex justify-center items-start flex-col w-full">
-                  <div className="flex justify-between items-center w-full">
-                    <h2 className="text-base font-semibold">Raju</h2>
-                  </div>
-                </div>
-              </div>
+                </Link>
+              ))}
             </div>
           </div>
           <div className="w-full md:w-[calc(100%-200px)] md:pl-4">
@@ -92,7 +147,9 @@ const SellerToCustomer = () => {
                     />
                     <div className="w-[10px] h-[10px] bg-green-500 rounded-full absolute right-0 bottom-0"></div>
                   </div>
-                  <h2 className="text-base text-white font-semibold">Kazi</h2>
+                  <h2 className="text-base text-white font-semibold">
+                    {currentCustomer.name}
+                  </h2>
                 </div>
               )}
               <div
@@ -106,52 +163,63 @@ const SellerToCustomer = () => {
             </div>
             <div className="py-4">
               <div className="bg-[#475569] h-[calc(100vh-290px)] rounded-md p-3 overflow-y-auto">
-                <div className="w-full flex justify-start items-center">
-                  <div className="flex justify-start items-start gap-2 md:px-3 py-2 max-w-full lg:max-w-[85%]">
-                    <div>
-                      <img
-                        className="w-[38px] h-[38px] border-2 border-white rounded-full max-w-[38px] p-[3px]"
-                        src="http://localhost:5173/src/assets/images/demo.jpg"
-                        alt=""
-                      />
-                    </div>
-                    <div className="flex justify-center items-start flex-col w-full bg-blue-500 shadow-lg shadow-blue-500/50 text-white py-1 px-2 rounded-sm">
-                      <span>How Are you ? </span>
-                    </div>
+                {customerId ? (
+                  messages.map((m, i) => {
+                    if (m.senderId === customerId) {
+                      return (
+                        <div
+                          key={i}
+                          ref={scrollRef}
+                          className="w-full flex justify-start items-center"
+                        >
+                          <div className="flex justify-start items-start gap-2 md:px-3 py-2 max-w-full lg:max-w-[85%]">
+                            <div>
+                              <img
+                                className="w-[38px] h-[38px] border-2 border-white rounded-full max-w-[38px] p-[3px]"
+                                src="http://localhost:5173/src/assets/images/demo.jpg"
+                                alt=""
+                              />
+                            </div>
+                            <div className="flex justify-center items-start flex-col w-full bg-blue-500 shadow-lg shadow-blue-500/50 text-white py-1 px-2 rounded-sm">
+                              <span>{m.message} </span>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    } else {
+                      return (
+                        <div
+                          key={i}
+                          ref={scrollRef}
+                          className="w-full flex justify-end items-center"
+                        >
+                          <div className="flex justify-start items-start gap-2 md:px-3 py-2 max-w-full lg:max-w-[85%]">
+                            <div className="flex justify-center items-start flex-col w-full bg-red-500 shadow-lg shadow-red-500/50 text-white py-1 px-2 rounded-sm">
+                              <span>{m.message} </span>
+                            </div>
+                            <div>
+                              <img
+                                className="w-[38px] h-[38px] border-2 border-white rounded-full max-w-[38px] p-[3px]"
+                                src="http://localhost:5173/src/assets/images/admin.jpg"
+                                alt=""
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    }
+                  })
+                ) : (
+                  <div className="w-full h-full flex justify-center items-center text-white gap-2 flex-col">
+                    <span>Select Customer </span>
                   </div>
-                </div>
-                <div className="w-full flex justify-end items-center">
-                  <div className="flex justify-start items-start gap-2 md:px-3 py-2 max-w-full lg:max-w-[85%]">
-                    <div className="flex justify-center items-start flex-col w-full bg-red-500 shadow-lg shadow-red-500/50 text-white py-1 px-2 rounded-sm">
-                      <span>How Are you ? </span>
-                    </div>
-                    <div>
-                      <img
-                        className="w-[38px] h-[38px] border-2 border-white rounded-full max-w-[38px] p-[3px]"
-                        src="http://localhost:5173/src/assets/images/admin.jpg"
-                        alt=""
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="w-full flex justify-start items-center">
-                  <div className="flex justify-start items-start gap-2 md:px-3 py-2 max-w-full lg:max-w-[85%]">
-                    <div>
-                      <img
-                        className="w-[38px] h-[38px] border-2 border-white rounded-full max-w-[38px] p-[3px]"
-                        src="http://localhost:5173/src/assets/images/demo.jpg"
-                        alt=""
-                      />
-                    </div>
-                    <div className="flex justify-center items-start flex-col w-full bg-blue-500 shadow-lg shadow-blue-500/50 text-white py-1 px-2 rounded-sm">
-                      <span>I Need some help </span>
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
-            <form className="flex gap-3">
+            <form onSubmit={send} className="flex gap-3">
               <input
+                value={text}
+                onChange={(e) => setText(e.target.value)}
                 className="w-full flex justify-between px-2 border border-slate-700 items-center py-[5px] focus:border-blue-500 rounded-md outline-none bg-transparent text-[#d0d2d6]"
                 type="text"
                 placeholder="Input Your Message"

@@ -36,7 +36,7 @@ const ChatSeller = () => {
 
   useEffect(() => {
     dispatch(getSellers())
-  })
+  }, [])
 
   useEffect(() => {
     if (sellerId) {

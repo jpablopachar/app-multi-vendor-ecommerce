@@ -205,9 +205,9 @@ export class ChatController {
   sellerAdminMessageInsert = async (req, res) => {
     const { senderId, receiverId, message, senderName } = req.body
 
-    if (!senderId || !receiverId || !message || !senderName)
+    if (!message || !senderName)
       responseReturn(res, 400, {
-        error: 'senderId, receiverId, message and senderName are required',
+        error: 'message and senderName are required',
       })
 
     try {
