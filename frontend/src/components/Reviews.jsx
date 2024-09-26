@@ -24,7 +24,7 @@ const Reviews = ({ product }) => {
     (state) => state.home
   )
 
-  const [parPage, setParPage] = useState(1)
+  const [parPage] = useState(1)
   const [pageNumber, setPageNumber] = useState(10)
   const [rat, setRat] = useState('')
   const [re, setRe] = useState('')

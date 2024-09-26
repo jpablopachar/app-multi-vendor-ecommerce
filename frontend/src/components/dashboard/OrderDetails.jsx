@@ -10,7 +10,7 @@ const OrderDetails = () => {
 
   const { userInfo } = useSelector((state) => state.auth)
 
-  const { myOrder } = useSelector((state) => state.order)
+  const { order } = useSelector((state) => state.order)
 
   useEffect(() => {
     dispatch(getOrderDetails(orderId))
@@ -19,21 +19,21 @@ const OrderDetails = () => {
   return (
     <div className="bg-white p-5">
       <h2 className="text-slate-600 font-semibold">
-        #{myOrder._id} , <span className="pl-1">{myOrder.date}</span>{' '}
+        #{order._id} , <span className="pl-1">{order.date}</span>{' '}
       </h2>
       <div className="grid grid-cols-2 gap-3">
         <div className="flex flex-col gap-1">
           <h2 className="text-slate-600 font-semibold font-sans">
-            Deliver To : {myOrder.shippingInfo?.name}{' '}
+            Deliver To : {order.shippingInfo?.name}{' '}
           </h2>
           <p>
             <span className="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2 py-2 rounded">
               Home
             </span>
             <span className="text-slate-600 text-sm">
-              {myOrder.shippingInfo?.address}
-              {myOrder.shippingInfo?.province}
-              {myOrder.shippingInfo?.city}
+              {order.shippingInfo?.address}
+              {order.shippingInfo?.province}
+              {order.shippingInfo?.city}
             </span>
           </p>
           <p className="text-slate-600 text-md font-semibold">
@@ -42,20 +42,20 @@ const OrderDetails = () => {
         </div>
         <div className="text-slate-600">
           <h2 className="font-mono">
-            Price : ${myOrder.price} Include Shipping
+            Price : ${order.price} Include Shipping
           </h2>
           <p className="font-mono">
             {' '}
             Payment Status :{' '}
             <span
               className={`py-[1px] text-xs px-3 ${
-                myOrder.payment_status === 'paid'
+                order.payment_status === 'paid'
                   ? 'bg-green-300 text-green-800'
                   : 'bg-red-300 text-red-800'
               } rounded-md`}
             >
               {' '}
-              {myOrder.payment_status}{' '}
+              {order.payment_status}{' '}
             </span>{' '}
           </p>
           <p className="font-mono">
@@ -63,13 +63,13 @@ const OrderDetails = () => {
             Order Status :{' '}
             <span
               className={`py-[1px] text-xs px-3 ${
-                myOrder.delivery_status === 'paid'
+                order.delivery_status === 'paid'
                   ? 'bg-green-300 text-green-800'
                   : 'bg-red-300 text-red-800'
               } rounded-md`}
             >
               {' '}
-              {myOrder.delivery_status}{' '}
+              {order.delivery_status}{' '}
             </span>{' '}
           </p>
         </div>
@@ -79,7 +79,7 @@ const OrderDetails = () => {
           Order Products{' '}
         </h2>
         <div className="flex gap-5 flex-col">
-          {myOrder.products?.map((p, i) => (
+          {order.products?.map((p, i) => (
             <div key={i}>
               <div className="flex gap-5 justify-start items-center text-slate-600">
                 <div className="flex gap-2">
