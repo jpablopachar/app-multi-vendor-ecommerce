@@ -3,34 +3,40 @@ name: CI/CD Server Pipeline
 on:
   push:
     branches:
-      - dev
-      - fix
       - main
     paths:
       - 'server/**'
-      - 'client/**'
   pull_request:
     branches:
       - main
     paths:
       - 'server/**'
-      - 'client/**'
 
 jobs:
-  build_server:
-    if: |
-      contains(github.event.head_commit.message, 'server') ||
-      contains(github.ref, 'refs/heads/main') ||
-      contains(github.ref, 'refs/heads/fix') ||
-      contains(github.ref, 'refs/heads/dev')
+  deploy_server_prod:
+    if: github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, 'server')
     runs-on: ubuntu-latest
-    name: Build and Test Server
+    name: Deploy Server to Production
 
-  build_client:
-    if: |
-      contains(github.event.head_commit.message, 'client') ||
-      contains(github.ref, 'refs/heads/main') ||
-      contains(github.ref, 'refs/heads/fix') ||
-      contains(github.ref, 'refs/heads/dev')
-    runs-on: ubuntu-latest
-    name: Build and Test Client
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.19.1'
+
+      - name: Install dependencies for server
+        working-directory: ./server
+        run: npm install
+
+      - name: Deploy and run the application in prod mode
+        working-directory: ./server
+        run: npm run prod
+
+      - name: Deploy to Railway
+        working-directory: ./server
+        run: railway up --environment prod
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
