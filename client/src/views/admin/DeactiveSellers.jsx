@@ -119,14 +119,12 @@ const DeactiveSellers = () => {
                   >
                     {d.email}{' '}
                   </td>
-
                   <td
                     scope="row"
                     className="py-1 px-4 font-medium whitespace-nowrap"
                   >
                     {d.status}{' '}
                   </td>
-
                   <td
                     scope="row"
                     className="py-1 px-4 font-medium whitespace-nowrap"
