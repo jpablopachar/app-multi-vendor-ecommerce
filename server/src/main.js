@@ -8,6 +8,7 @@ import {
   CLIENT_ANGULAR_URL,
   CLIENT_REACT_URL,
   FRONTEND_REACT_URL,
+  NODE_ENV,
   PORT,
 } from './config.js'
 import { authRouter } from './routes/auth/authRoutes.js'
@@ -56,8 +57,12 @@ app.use('/api/payment', paymentRouter)
 
 dbConnect().then(() => {
   server.listen(PORT, () => {
+    const message =
+      NODE_ENV === 'prod'
+        ? 'Server connected'
+        : `Server is running on http://localhost:${PORT}`
     // eslint-disable-next-line no-undef
-    console.log(`Server is running on http://localhost:${PORT}`)
+    console.log(message)
 
     // swaggerDocs(app, PORT)
   })
