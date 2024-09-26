@@ -16,7 +16,7 @@ const Wishlist = () => {
 
   const { userInfo } = useSelector((state) => state.auth)
 
-  const { wishlist, successMessage } = useSelector((state) => state.card)
+  const { wishList, successMessage } = useSelector((state) => state.card)
 
   useEffect(() => {
     dispatch(getWishListProducts(userInfo.id))
@@ -32,7 +32,7 @@ const Wishlist = () => {
 
   return (
     <div className="w-full grid grid-cols-4 md-lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-6">
-      {wishlist.map((p, i) => (
+      {wishList.map((p, i) => (
         <div
           key={i}
           className="border group transition-all duration-500 hover:shadow-md hover:-mt-3 bg-white"
