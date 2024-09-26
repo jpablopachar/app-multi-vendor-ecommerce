@@ -14,19 +14,17 @@ const AddProduct = () => {
   const dispatch = useDispatch()
 
   const { categories } = useSelector((state) => state.category)
+
   const { loader, successMessage, errorMessage } = useSelector(
     (state) => state.product
   )
 
-  useEffect(() => {
-    dispatch(
-      getCategories({
-        searchValue: '',
-        parPage: '',
-        page: '',
-      })
-    )
-  }, [])
+  const [cateShow, setCateShow] = useState(false)
+  const [category, setCategory] = useState('')
+  const [allCategory, setAllCategory] = useState(categories)
+  const [searchValue, setSearchValue] = useState('')
+  const [images, setImages] = useState([])
+  const [imageShow, setImageShow] = useState([])
 
   const [state, setState] = useState({
     name: '',
@@ -37,49 +35,15 @@ const AddProduct = () => {
     stock: '',
   })
 
-  const inputHandle = (e) => {
-    setState({
-      ...state,
-      [e.target.name]: e.target.value,
-    })
-  }
-
-  const [cateShow, setCateShow] = useState(false)
-  const [category, setCategory] = useState('')
-  const [allCategory, setAllCategory] = useState(categories)
-  const [searchValue, setSearchValue] = useState('')
-
-  const categorySearch = (e) => {
-    const value = e.target.value
-
-    setSearchValue(value)
-
-    if (value) {
-      let srcValue = allCategory.filter(
-        (c) => c.name.toLowerCase().indexOf(value.toLowerCase()) > -1
-      )
-
-      setAllCategory(srcValue)
-    } else {
-      setAllCategory(categories)
-    }
-  }
-
-  const [images, setImages] = useState([])
-  const [imageShow, setImageShow] = useState([])
-
-  const imageHandle = (e) => {
-    const files = e.target.files
-    const length = files.length
-    if (length > 0) {
-      setImages([...images, ...files])
-      let imageUrl = []
-      for (let i = 0; i < length; i++) {
-        imageUrl.push({ url: URL.createObjectURL(files[i]) })
-      }
-      setImageShow([...imageShow, ...imageUrl])
-    }
-  }
+  useEffect(() => {
+    dispatch(
+      getCategories({
+        searchValue: '',
+        parPage: '',
+        page: '',
+      })
+    )
+  }, [])
 
   useEffect(() => {
     if (successMessage) {
@@ -107,6 +71,46 @@ const AddProduct = () => {
       dispatch(messageClear())
     }
   }, [successMessage, errorMessage])
+
+  useEffect(() => {
+    setAllCategory(categories)
+  }, [categories])
+
+  const inputHandle = (e) => {
+    setState({
+      ...state,
+      [e.target.name]: e.target.value,
+    })
+  }
+
+  const categorySearch = (e) => {
+    const value = e.target.value
+
+    setSearchValue(value)
+
+    if (value) {
+      let srcValue = allCategory.filter(
+        (c) => c.name.toLowerCase().indexOf(value.toLowerCase()) > -1
+      )
+
+      setAllCategory(srcValue)
+    } else {
+      setAllCategory(categories)
+    }
+  }
+
+  const imageHandle = (e) => {
+    const files = e.target.files
+    const length = files.length
+    if (length > 0) {
+      setImages([...images, ...files])
+      let imageUrl = []
+      for (let i = 0; i < length; i++) {
+        imageUrl.push({ url: URL.createObjectURL(files[i]) })
+      }
+      setImageShow([...imageShow, ...imageUrl])
+    }
+  }
 
   const changeImage = (img, index) => {
     if (img) {
@@ -150,10 +154,6 @@ const AddProduct = () => {
 
     dispatch(addProduct(formData))
   }
-
-  useEffect(() => {
-    setAllCategory(categories)
-  }, [categories])
 
   return (
     <div className="px-2 lg:px-7 pt-5">
