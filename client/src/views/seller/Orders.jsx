@@ -1,13 +1,34 @@
-import { useState } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+
+import { useEffect, useState } from 'react'
 import { FaEye } from 'react-icons/fa'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { getSellerOrders } from '../../store/reducers/orderReducer'
 import Search from '../components/Search'
 import Pagination from '../Pagination'
 
 const Orders = () => {
+  const dispatch = useDispatch()
+
+  const { orders, totalOrders } = useSelector((state) => state.order)
+
+  const { userInfo } = useSelector((state) => state.auth)
+
   const [currentPage, setCurrentPage] = useState(1)
   const [searchValue, setSearchValue] = useState('')
   const [parPage, setParPage] = useState(5)
+
+  useEffect(() => {
+    const obj = {
+      parPage: parseInt(parPage),
+      page: parseInt(currentPage),
+      searchValue,
+      sellerId: userInfo._id,
+    }
+
+    dispatch(getSellerOrders(obj))
+  }, [searchValue, currentPage, parPage])
 
   return (
     <div className="px-2 lg:px-7 pt-5">
@@ -35,36 +56,45 @@ const Orders = () => {
                   Order Status
                 </th>
                 <th scope="col" className="py-3 px-4">
+                  Date
+                </th>
+                <th scope="col" className="py-3 px-4">
                   Action
                 </th>
               </tr>
             </thead>
             <tbody>
-              {[1, 2, 3, 4, 5].map((d, i) => (
+              {orders.map((d, i) => (
                 <tr key={i}>
                   <td
                     scope="row"
                     className="py-1 px-4 font-medium whitespace-nowrap"
                   >
-                    #5455
+                    #{d._id}
                   </td>
                   <td
                     scope="row"
                     className="py-1 px-4 font-medium whitespace-nowrap"
                   >
-                    $455
+                    ${d.price}
                   </td>
                   <td
                     scope="row"
                     className="py-1 px-4 font-medium whitespace-nowrap"
                   >
-                    pending{' '}
+                    {d.payment_status}{' '}
                   </td>
                   <td
                     scope="row"
                     className="py-1 px-4 font-medium whitespace-nowrap"
                   >
-                    pending
+                    {d.delivery_status}
+                  </td>
+                  <td
+                    scope="row"
+                    className="py-1 px-4 font-medium whitespace-nowrap"
+                  >
+                    {d.date}
                   </td>
                   <td
                     scope="row"
@@ -72,7 +102,7 @@ const Orders = () => {
                   >
                     <div className="flex justify-start items-center gap-4">
                       <Link
-                        to={`/seller/dashboard/order/details/34`}
+                        to={`/seller/dashboard/order/details/${d._id}`}
                         className="p-[6px] bg-green-500 rounded hover:shadow-lg hover:shadow-green-500/50"
                       >
                         {' '}
@@ -85,15 +115,19 @@ const Orders = () => {
             </tbody>
           </table>
         </div>
-        <div className="w-full flex justify-end mt-4 bottom-4 right-4">
-          <Pagination
-            pageNumber={currentPage}
-            setPageNumber={setCurrentPage}
-            totalItem={50}
-            parPage={parPage}
-            showItem={3}
-          />
-        </div>
+        {totalOrders <= parPage ? (
+          ''
+        ) : (
+          <div className="w-full flex justify-end mt-4 bottom-4 right-4">
+            <Pagination
+              pageNumber={currentPage}
+              setPageNumber={setCurrentPage}
+              totalItem={totalOrders}
+              parPage={parPage}
+              showItem={3}
+            />
+          </div>
+        )}
       </div>
     </div>
   )
