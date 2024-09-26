@@ -10,12 +10,15 @@ const DiscountProducts = lazy(() =>
 const Orders = lazy(() => import('../../views/seller/Orders'))
 const Payments = lazy(() => import('../../views/seller/Payments'))
 const SellerToAdmin = lazy(() => import('../../views/seller/SellerToAdmin'))
-const SellerToCustomer = lazy(() => import('../../views/seller/SellerToCustomer'))
+const SellerToCustomer = lazy(() =>
+  import('../../views/seller/SellerToCustomer')
+)
 const Profile = lazy(() => import('../../views/seller/Profile'))
 const EditProduct = lazy(() => import('../../views/seller/EditProduct'))
 const OrderDetails = lazy(() => import('../../views/seller/OrderDetails'))
 const Pending = lazy(() => import('../../views/Pending'))
 const Deactive = lazy(() => import('../../views/Deactive'))
+const AddBanner = lazy(() => import('../../views/seller/AddBanner'))
 
 export const sellerRoutes = [
   {
@@ -98,6 +101,12 @@ export const sellerRoutes = [
     path: '/seller/dashboard/profile',
     element: <Profile />,
     role: 'seller',
-    visibility: ['active', 'deactive', 'pending']
+    visibility: ['active', 'deactive', 'pending'],
+  },
+  {
+    path: '/seller/dashboard/add-banner/:productId',
+    element: <AddBanner />,
+    role: 'seller',
+    status: 'active',
   },
 ]
