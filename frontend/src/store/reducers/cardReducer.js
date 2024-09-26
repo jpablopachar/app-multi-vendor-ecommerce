@@ -135,7 +135,7 @@ export const cardReducer = createSlice({
     resetCount: (state) => {
       state.cardProductCount = 0
       state.wishListCount = 0
-    }
+    },
   },
   extraReducers: (builder) => {
     builder

@@ -69,8 +69,8 @@ export const getOrderDetails = createAsyncThunk(
 export const orderReducer = createSlice({
   name: 'order',
   initialState: {
-    myOrders: [],
-    myOrder: {},
+    orders: [],
+    order: {},
     errorMessage: '',
     successMessage: '',
   },
@@ -83,10 +83,10 @@ export const orderReducer = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getOrders.fulfilled, (state, { payload }) => {
-        state.myOrders = payload.orders
+        state.orders = payload.orders
       })
       .addCase(getOrderDetails.fulfilled, (state, { payload }) => {
-        state.myOrder = payload.order
+        state.order = payload.order
       })
   },
 })

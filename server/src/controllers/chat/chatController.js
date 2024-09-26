@@ -81,12 +81,12 @@ export class ChatController {
 
       const myFriends = await SellerCustomer.findOne({ myId: userId })
 
-      const currentFd = myFriends.myFriends.find((fd) => fd.fdIn === sellerId)
+      const currentFriend = myFriends.myFriends.find((fd) => fd.fdIn === sellerId)
 
       responseReturn(res, 200, {
         messages,
-        myFriends: myFriends.myFriends,
-        currentFd,
+        friends: myFriends.myFriends,
+        currentFriend,
       })
     } catch (error) {
       console.error('Error in addCustomerFriend:', error)
