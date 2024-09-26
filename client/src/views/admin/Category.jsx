@@ -9,8 +9,10 @@ import { Link } from 'react-router-dom'
 import { PropagateLoader } from 'react-spinners'
 import {
   categoryAdd,
+  deleteCategory,
   getCategories,
   messageClear,
+  updateCategory,
 } from '../../store/reducers/categoryReducer'
 import { overrideStyle } from '../../utils/utils'
 import Search from '../components/Search'
@@ -28,6 +30,8 @@ const Category = () => {
   const [parPage, setParPage] = useState(5)
   const [show, setShow] = useState(false)
   const [imageShow, setImageShow] = useState('')
+  const [isEdit, setIsEdit] = useState(false)
+  const [editId, setEditId] = useState(null)
   const [state, setState] = useState({ name: '', image: '' })
 
   const imageHandle = (event) => {
@@ -40,10 +44,14 @@ const Category = () => {
     }
   }
 
-  const addCategory = (event) => {
+  const addUpdateCategory = (event) => {
     event.preventDefault()
 
-    dispatch(categoryAdd(state))
+    if (isEdit) {
+      dispatch(updateCategory({ ...state, id: editId }))
+    } else {
+      dispatch(categoryAdd(state))
+    }
   }
 
   useEffect(() => {
@@ -54,6 +62,8 @@ const Category = () => {
 
       setState({ name: '', image: '' })
       setImageShow('')
+      setIsEdit(false)
+      setEditId(null)
     }
 
     if (errorMessage) {
@@ -61,7 +71,7 @@ const Category = () => {
 
       dispatch(messageClear())
     }
-  }, [successMessage, errorMessage])
+  }, [successMessage, errorMessage, dispatch])
 
   useEffect(() => {
     const obj = {
@@ -72,6 +82,26 @@ const Category = () => {
 
     dispatch(getCategories(obj))
   }, [searchValue, currentPage, parPage])
+
+  const handleEdit = (category) => {
+    setState({
+      name: category.name,
+      image: category.image,
+    })
+
+    setImageShow(category.image)
+    setEditId(category._id)
+    setIsEdit(true)
+    setShow(true)
+  }
+
+  const handleDelete = (id) => {
+    if (window.confirm('Are you sure to delete category?')) {
+      console.log('delete category id', id)
+
+      dispatch(deleteCategory(id))
+    }
+  }
 
   return (
     <div className="px-2 lg:px-7 pt-5">
@@ -135,17 +165,22 @@ const Category = () => {
                       >
                         {d.name}
                       </td>
-
                       <td
                         scope="row"
                         className="py-1 px-4 font-medium whitespace-nowrap"
                       >
                         <div className="flex justify-start items-center gap-4">
-                          <Link className="p-[6px] bg-yellow-500 rounded hover:shadow-lg hover:shadow-yellow-500/50">
+                          <Link
+                            className="p-[6px] bg-yellow-500 rounded hover:shadow-lg hover:shadow-yellow-500/50"
+                            onClick={() => handleEdit(d)}
+                          >
                             {' '}
                             <FaEdit />{' '}
                           </Link>
-                          <Link className="p-[6px] bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50">
+                          <Link
+                            className="p-[6px] bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50"
+                            onClick={() => handleDelete(d._id)}
+                          >
                             {' '}
                             <FaTrash />{' '}
                           </Link>
@@ -176,15 +211,14 @@ const Category = () => {
             <div className="bg-[#6a5fdf] h-screen lg:h-auto px-3 py-2 lg:rounded-md text-[#d0d2d6]">
               <div className="flex justify-between items-center mb-4">
                 <h1 className="text-[#d0d2d6] font-semibold text-xl mb-4 w-full text-center ">
-                  Add Category
+                  {' '}
+                  {isEdit ? 'Edit Category' : 'Add Category'}{' '}
                 </h1>
-
                 <div onClick={() => setShow(false)} className="block lg:hidden">
                   <IoMdCloseCircle />
                 </div>
               </div>
-
-              <form onSubmit={addCategory}>
+              <form onSubmit={addUpdateCategory}>
                 <div className="flex flex-col w-full gap-1 mb-3">
                   <label htmlFor="name"> Category Name</label>
                   <input
@@ -225,13 +259,15 @@ const Category = () => {
                   <div className="mt-4">
                     <button
                       disabled={loader ? true : false}
-                      className="bg-red-800 w-full hover:shadow-red-300/50 hover:shadow-lg text-white rounded-md px-7 py-2 mb-3"
+                      className="bg-red-500 w-full hover:shadow-red-300/50 hover:shadow-lg text-white rounded-md px-7 py-2 mb-3"
                     >
                       {loader ? (
                         <PropagateLoader
                           color="#fff"
                           cssOverride={overrideStyle}
                         />
+                      ) : isEdit ? (
+                        'Update Category'
                       ) : (
                         'Add Category'
                       )}
